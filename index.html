@@ -2848,14 +2848,14 @@
         // FALLBACK DATA
         // ==========================================
         const FALLBACK_DATA = [
-            { area: 'Direito Civil', inscritos: 188, aprovProva: 120, aprovOnboard: 106, aprovTotal: 113, ativados: 95, taxaConv: 50.5, pendentes: 18, bloqueados: 7, desativados: 6, saidaVol: 4, desistentes: 0 },
-            { area: 'Direito Trabalhista', inscritos: 72, aprovProva: 47, aprovOnboard: 47, aprovTotal: 47, ativados: 40, taxaConv: 55.6, pendentes: 7, bloqueados: 7, desativados: 1, saidaVol: 0, desistentes: 3 },
-            { area: 'Direito Previdenciário', inscritos: 25, aprovProva: 14, aprovOnboard: 15, aprovTotal: 15, ativados: 11, taxaConv: 44.0, pendentes: 4, bloqueados: 2, desativados: 1, saidaVol: 0, desistentes: 0 },
-            { area: 'Direito Penal', inscritos: 18, aprovProva: 11, aprovOnboard: 10, aprovTotal: 11, ativados: 9, taxaConv: 50.0, pendentes: 2, bloqueados: 0, desativados: 1, saidaVol: 0, desistentes: 2 },
-            { area: 'Direito Empresarial', inscritos: 15, aprovProva: 5, aprovOnboard: 5, aprovTotal: 5, ativados: 5, taxaConv: 33.3, pendentes: 0, bloqueados: 0, desativados: 1, saidaVol: 0, desistentes: 0 },
-            { area: 'Direito Administrativo', inscritos: 14, aprovProva: 7, aprovOnboard: 6, aprovTotal: 9, ativados: 5, taxaConv: 35.7, pendentes: 4, bloqueados: 0, desativados: 0, saidaVol: 0, desistentes: 0 },
-            { area: 'Direito Tributário', inscritos: 14, aprovProva: 8, aprovOnboard: 7, aprovTotal: 8, ativados: 8, taxaConv: 57.1, pendentes: 0, bloqueados: 2, desativados: 0, saidaVol: 0, desistentes: 0 },
-            { area: 'Outras áreas', inscritos: 10, aprovProva: 8, aprovOnboard: 5, aprovTotal: 8, ativados: 4, taxaConv: 40.0, pendentes: 4, bloqueados: 1, desativados: 0, saidaVol: 0, desistentes: 1 }
+            { area: 'Direito Civil', inscritos: 184, aprovProva: 112, aprovOnboard: 106, aprovTotal: 104, ativados: 89, taxaConv: 48.4, pendentes: 19, bloqueados: 9, desativados: 9, saidaVol: 3, desistentes: 3 },
+            { area: 'Direito Trabalhista', inscritos: 71, aprovProva: 43, aprovOnboard: 41, aprovTotal: 40, ativados: 35, taxaConv: 49.3, pendentes: 7, bloqueados: 4, desativados: 4, saidaVol: 1, desistentes: 1 },
+            { area: 'Direito Previdenciário', inscritos: 25, aprovProva: 15, aprovOnboard: 14, aprovTotal: 14, ativados: 12, taxaConv: 48.0, pendentes: 3, bloqueados: 2, desativados: 1, saidaVol: 1, desistentes: 0 },
+            { area: 'Direito Penal', inscritos: 18, aprovProva: 11, aprovOnboard: 10, aprovTotal: 10, ativados: 9, taxaConv: 50.0, pendentes: 2, bloqueados: 1, desativados: 1, saidaVol: 0, desistentes: 0 },
+            { area: 'Direito Empresarial', inscritos: 15, aprovProva: 9, aprovOnboard: 8, aprovTotal: 8, ativados: 7, taxaConv: 46.7, pendentes: 1, bloqueados: 1, desativados: 1, saidaVol: 0, desistentes: 0 },
+            { area: 'Direito Administrativo', inscritos: 13, aprovProva: 8, aprovOnboard: 7, aprovTotal: 7, ativados: 6, taxaConv: 46.2, pendentes: 2, bloqueados: 0, desativados: 0, saidaVol: 1, desistentes: 0 },
+            { area: 'Direito Tributário', inscritos: 14, aprovProva: 9, aprovOnboard: 8, aprovTotal: 8, ativados: 7, taxaConv: 50.0, pendentes: 1, bloqueados: 1, desativados: 1, saidaVol: 0, desistentes: 0 },
+            { area: 'Outras áreas', inscritos: 8, aprovProva: 5, aprovOnboard: 6, aprovTotal: 6, ativados: 3, taxaConv: 37.5, pendentes: 1, bloqueados: 0, desativados: 0, saidaVol: 0, desistentes: 1 }
         ];
 
         // ==========================================
@@ -2901,15 +2901,15 @@
                 } else {
                     console.warn('API indisponível - usando fallback');
                     areaData = FALLBACK_DATA;
-                    ativosCount = 123;
-                    totalInscricoes = 356;
-                    totalAprovados = 220;
-                    totalAtivos = 123;
-                    totalPendentes = 39;
-                    totalBloqueados = 19;
-                    totalDesativados = 10;
-                    totalDesistentes = 6;
-                    totalSaidaVol = 4;
+                    ativosCount = 168;
+                    totalInscricoes = 348;
+                    totalAprovados = 212;
+                    totalAtivos = 168;
+                    totalPendentes = 36;
+                    totalBloqueados = 18;
+                    totalDesativados = 17;
+                    totalDesistentes = 5;
+                    totalSaidaVol = 6;
                 }
 
                 const totais = calcularTotais(areaData);
@@ -2935,11 +2935,11 @@
             } catch (error) {
                 console.error('Erro ao carregar dados:', error);
                 const totais = calcularTotais(FALLBACK_DATA);
-                totais.inscritos = 356;
-                totais.aprovProva = 220;
-                totais.ativados = 123;
-                totais.churnTotal = 39;
-                renderDashboard(totais, 123);
+                totais.inscritos = 348;
+                totais.aprovProva = 212;
+                totais.ativados = 168;
+                totais.churnTotal = 46;
+                renderDashboard(totais, 168);
             }
         }
 
