@@ -2543,6 +2543,7 @@
                         <thead>
                             <tr>
                                 <th class="sortable" data-sort="nome">Nome</th>
+                                <th class="sortable" data-sort="email">Email</th>
                                 <th class="sortable" data-sort="oab">OAB</th>
                                 <th class="sortable" data-sort="area">Área</th>
                                 <th class="sortable" data-sort="media">Média 30d</th>
@@ -2550,7 +2551,7 @@
                             </tr>
                         </thead>
                         <tbody id="prestadoresTableBody">
-                            <tr><td colspan="5" style="text-align:center;color:#999;">Carregando...</td></tr>
+                            <tr><td colspan="6" style="text-align:center;color:#999;">Carregando...</td></tr>
                         </tbody>
                     </table>
                     <div class="table-results-info" id="perfResultsInfo"></div>
@@ -3619,6 +3620,7 @@
             // Armazenar dados para filtros
             perfTableData = data.rows.map(row => ({
                 nome: row[1] || '',
+                email: row[0] || '',
                 oab: row[2] || '',
                 area: row[4] || '',
                 media: row[8] !== null ? parseFloat(row[8]) : null,
@@ -3705,11 +3707,12 @@
             // Renderizar
             const tbody = document.getElementById('prestadoresTableBody');
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:40px;">Nenhum prestador encontrado</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:40px;">Nenhum prestador encontrado</td></tr>';
             } else {
                 tbody.innerHTML = filtered.map(row => `
                     <tr>
                         <td>${row.nome || '--'}</td>
+                        <td style="font-size: 0.85rem;">${row.email || '--'}</td>
                         <td>${row.oab || '--'}</td>
                         <td>${row.area || '--'}</td>
                         <td>${row.media !== null ? row.media.toFixed(1) : '--'}</td>
