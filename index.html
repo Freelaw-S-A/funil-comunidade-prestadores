@@ -2865,10 +2865,15 @@
         // LOADING STATE
         // ==========================================
         function mostrarLoading() {
-            document.getElementById('totalInscritos').textContent = '...';
-            document.getElementById('totalAprovados').textContent = '...';
-            document.getElementById('taxaAtivacao').textContent = '...';
-            document.getElementById('tiersContainer').innerHTML = '<p style="color:#9ca3af;">Carregando...</p>';
+            const totalInscritos = document.getElementById('totalInscritos');
+            const totalAprovados = document.getElementById('totalAprovados');
+            const taxaAtivacao = document.getElementById('taxaAtivacao');
+            const tiersContainer = document.getElementById('tiersContainer');
+
+            if (totalInscritos) totalInscritos.textContent = '...';
+            if (totalAprovados) totalAprovados.textContent = '...';
+            if (taxaAtivacao) taxaAtivacao.textContent = '...';
+            if (tiersContainer) tiersContainer.innerHTML = '<p style="color:#9ca3af;">Carregando...</p>';
         }
 
         // ==========================================
