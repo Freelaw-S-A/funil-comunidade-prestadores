@@ -3113,6 +3113,8 @@
                 nota_prova_tecnica: 5,
                 prova_finalizada_em: 6,
                 prestador_verificado: 7,
+                interesse_alto_volume: 8,
+                data_inscricao: 9,
                 como_conheceu: 10
             }
         };
@@ -3160,7 +3162,7 @@
                 const canal = normalizeCanal(canalOriginal);
                 const area = row[CANAIS_CONFIG.fields.area_atuacao_principal] || 'Não informado';
                 const nota = row[CANAIS_CONFIG.fields.nota_prova_tecnica];
-                const dataProva = row[CANAIS_CONFIG.fields.prova_iniciada_em];
+                const dataInscricao = row[CANAIS_CONFIG.fields.data_inscricao];
                 const aprovado = nota !== null && nota >= 7;
 
                 canais[canal]++;
@@ -3171,9 +3173,9 @@
                 }
                 areasPorCanal[area][canal]++;
 
-                // Processar evolução mensal
-                if (dataProva) {
-                    const date = new Date(dataProva);
+                // Processar evolução mensal (usa data de inscrição)
+                if (dataInscricao) {
+                    const date = new Date(dataInscricao);
                     const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
                     const mesAno = `${meses[date.getMonth()]}/${String(date.getFullYear()).slice(-2)}`;
 
