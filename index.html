@@ -2859,24 +2859,36 @@
         ];
 
         // ==========================================
+        // LOADING STATE
+        // ==========================================
+        function mostrarLoading() {
+            document.getElementById('totalInscritos').textContent = '...';
+            document.getElementById('totalAprovados').textContent = '...';
+            document.getElementById('taxaAtivacao').textContent = '...';
+            document.getElementById('tiersContainer').innerHTML = '<p style="color:#9ca3af;">Carregando...</p>';
+        }
+
+        // ==========================================
         // MAIN
         // ==========================================
         async function carregarDados() {
+            mostrarLoading();
+
             try {
-                // Query 3821 substitui 3530-3537. Índices: 12:is_aprovado, 13:is_ativado, 14:is_desativado,
-                // 15:is_desistente, 16:is_bloqueado, 17:is_pendente_admin, 18:is_saida_voluntaria
                 const [areaRows, funilRows, ativosRows] = await Promise.all([
                     fetchMetabaseData(METABASE_CONFIG.queryAreaId),
-                    fetchMetabaseData(METABASE_CONFIG.queryFunilMasterId),  // Query 3821 - consolidada
-                    fetchMetabaseData(METABASE_CONFIG.queryAtivosId)        // Query 3622 - ativos com tier
+                    fetchMetabaseData(METABASE_CONFIG.queryFunilMasterId),
+                    fetchMetabaseData(METABASE_CONFIG.queryAtivosId)
                 ]);
 
                 let areaData, ativosCount, totalInscricoes, totalAprovados, totalAtivos, totalPendentes, totalBloqueados;
                 let totalDesativados, totalDesistentes, totalSaidaVol;
 
-                if (areaRows && funilRows) {
+                // Só usa fallback se API realmente falhar
+                const usarDadosReais = areaRows && areaRows.length > 0 && funilRows && funilRows.length > 0;
+
+                if (usarDadosReais) {
                     areaData = processAreaData(areaRows);
-                    // Calcular totais filtrando pela query 3821 consolidada
                     totalInscricoes = funilRows.length;
                     totalAprovados = funilRows.filter(r => r[12] === true).length;
                     ativosCount = funilRows.filter(r => r[13] === true).length;
@@ -2887,7 +2899,7 @@
                     totalSaidaVol = funilRows.filter(r => r[18] === true).length;
                     totalAtivos = ativosRows ? ativosRows.length : ativosCount;
                 } else {
-                    console.log('Usando dados de fallback');
+                    console.warn('API indisponível - usando fallback');
                     areaData = FALLBACK_DATA;
                     ativosCount = 123;
                     totalInscricoes = 356;
@@ -2902,53 +2914,34 @@
 
                 const totais = calcularTotais(areaData);
 
-                // Sobrescrever com dados da query 3821 consolidada
-                if (totalInscricoes !== null) {
-                    totais.inscritos = totalInscricoes;
-                }
-                if (totalAprovados !== null) {
-                    totais.aprovProva = totalAprovados;
-                }
-                if (ativosCount > 0) {
-                    totais.ativados = ativosCount;
-                }
-                if (totalAtivos !== null) {
-                    ativosCount = totalAtivos;
-                }
-                if (totalPendentes !== null) {
-                    totais.pendentes = totalPendentes;
-                }
-                if (totalBloqueados !== null) {
-                    totais.bloqueados = totalBloqueados;
-                }
-                if (totalDesativados !== null) {
-                    totais.desativados = totalDesativados;
-                }
-                if (totalDesistentes !== null) {
-                    totais.desistentes = totalDesistentes;
-                }
-                if (totalSaidaVol !== null) {
-                    totais.saidaVol = totalSaidaVol;
-                }
-                console.log(`[Query 3821] Inscrições: ${totalInscricoes}, Aprovados: ${totalAprovados}, Ativados: ${ativosCount}, Ativos: ${totalAtivos}`);
-                console.log(`[Query 3821] Pendentes: ${totalPendentes}, Bloqueados: ${totalBloqueados}, Desativados: ${totalDesativados}, Desistentes: ${totalDesistentes}, Saída: ${totalSaidaVol}`);
+                // Sobrescrever com dados consolidados
+                totais.inscritos = totalInscricoes;
+                totais.aprovProva = totalAprovados;
+                totais.ativados = ativosCount;
+                totais.pendentes = totalPendentes;
+                totais.bloqueados = totalBloqueados;
+                totais.desativados = totalDesativados;
+                totais.desistentes = totalDesistentes;
+                totais.saidaVol = totalSaidaVol;
 
-                // Calcular Churn Total (soma simples - bloqueados + desativados + desistentes + saída voluntária)
-                const somaSimples = (totais.bloqueados || 0) + (totais.desativados || 0) + (totais.desistentes || 0) + (totais.saidaVol || 0);
-                totais.churnTotal = somaSimples;
-                console.log(`Churn Total: ${somaSimples} (bloqueados: ${totais.bloqueados}, desativados: ${totais.desativados}, desistentes: ${totais.desistentes}, saidaVol: ${totais.saidaVol})`);
+                // Calcular Churn Total
+                totais.churnTotal = (totais.bloqueados || 0) + (totais.desativados || 0) +
+                                   (totais.desistentes || 0) + (totais.saidaVol || 0);
+
+                console.log(`[Dados ${usarDadosReais ? 'API' : 'Fallback'}] Inscrições: ${totalInscricoes}, Aprovados: ${totalAprovados}, Ativos: ${totalAtivos}`);
 
                 renderDashboard(totais, ativosCount);
 
             } catch (error) {
                 console.error('Erro ao carregar dados:', error);
                 const totais = calcularTotais(FALLBACK_DATA);
+                totais.inscritos = 356;
+                totais.aprovProva = 220;
+                totais.ativados = 123;
+                totais.churnTotal = 39;
                 renderDashboard(totais, 123);
             }
         }
-
-        // Iniciar
-        carregarDados();
 
         // ==========================================
         // SEGMENTAÇÃO POR TIER - Query 3697
@@ -3085,8 +3078,16 @@
             }
         }
 
-        // Carregar tiers
-        carregarTiers();
+        // ==========================================
+        // INICIALIZAÇÃO - Carrega dados após DOM pronto
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            mostrarLoading();
+            await Promise.all([
+                carregarDados(),
+                carregarTiers()
+            ]);
+        });
 
         // ==========================================
         // CANAIS DE ENTRADA - Query 3821 (consolidada)
