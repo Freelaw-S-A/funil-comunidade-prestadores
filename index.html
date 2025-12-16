@@ -4040,26 +4040,52 @@
         function findPrestadorByEmail(email) {
             if (!email) return null;
             const emailLower = email.toLowerCase().trim();
-            // Usar dados embutidos (query 3622) - fonte da verdade
-            return CARTEIRIZACAO_DATA.find(row => row[0].toLowerCase() === emailLower);
+
+            // 1. Buscar na query 3622 (CARTEIRIZACAO_DATA) - prestadores ativos com tier
+            const ativoRow = CARTEIRIZACAO_DATA.find(row => row[0] && row[0].toLowerCase() === emailLower);
+            if (ativoRow) {
+                return {
+                    source: '3622',
+                    email: ativoRow[0],
+                    nome: ativoRow[1],
+                    oab: ativoRow[2],
+                    whatsapp: ativoRow[3],
+                    area: ativoRow[4],
+                    experiencia: ativoRow[5] || '',
+                    notaProva: ativoRow[6] || '',
+                    acertosOnboarding: ativoRow[7] || '',
+                    media30d: ativoRow[8],
+                    classificacao: ativoRow[9],
+                    tier: ativoRow[10] || 'Ativo',
+                    status: 'Ativo'
+                };
+            }
+
+            // 2. Buscar na query 3821 (prestadoresData) - funil completo
+            // Estrutura: 0:email, 1:oab, 2:nome, 3:telefone, 4:area, 5:nota, 6:prova_finalizada,
+            // 12:is_aprovado, 13:is_ativado, 14:is_desativado, 15:is_desistente, 16:is_bloqueado, 17:is_pendente_admin, 18:is_saida_voluntaria, 19:status_funil
+            const funilRow = prestadoresData.find(p => p.email && p.email.toLowerCase() === emailLower);
+            if (funilRow) {
+                return {
+                    source: '3821',
+                    email: funilRow.email,
+                    nome: funilRow.nome,
+                    oab: funilRow.oab,
+                    whatsapp: funilRow.telefone,
+                    area: funilRow.area,
+                    notaProva: funilRow.notaProva || '',
+                    tier: funilRow.status || 'Inscrito',
+                    status: funilRow.status || 'Inscrito'
+                };
+            }
+
+            return null;
         }
 
         function selectPrestador(email) {
-            const row = findPrestadorByEmail(email);
-            if (row) {
-                currentPrestador = {
-                    email: row[0],
-                    nome: row[1],
-                    oab: row[2],
-                    whatsapp: row[3],
-                    area: row[4],
-                    experiencia: row[5] || '',
-                    notaProva: row[6] || '',
-                    acertosOnboarding: row[7] || '',
-                    media30d: row[8],
-                    classificacao: row[9],
-                    tier: row[10]
-                };
+            const prestador = findPrestadorByEmail(email);
+            if (prestador) {
+                currentPrestador = prestador;
 
                 // Atualizar UI - mostrar info do prestador
                 const infoSection = document.getElementById('mariaPrestadorInfo');
@@ -4072,7 +4098,8 @@
                 document.getElementById('mariaChatInput').placeholder = 'Faça uma pergunta sobre ' + currentPrestador.nome.split(' ')[0] + '...';
 
                 // Mensagem de boas-vindas personalizada
-                addMariaMessage('bot', `Encontrei! <strong>${currentPrestador.nome.split(' ')[0]}</strong> está no <strong>${currentPrestador.tier}</strong>. O que você gostaria de saber?`);
+                const sourceInfo = currentPrestador.source === '3622' ? '(ativo com métricas)' : '(no funil)';
+                addMariaMessage('bot', `Encontrei! <strong>${currentPrestador.nome.split(' ')[0]}</strong> está no <strong>${currentPrestador.tier}</strong> ${sourceInfo}. O que você gostaria de saber?`);
                 showSuggestions();
             } else {
                 addMariaMessage('bot', `Não encontrei nenhum prestador com o e-mail <strong>${email}</strong>. Verifique se está correto ou tente outro.`);
