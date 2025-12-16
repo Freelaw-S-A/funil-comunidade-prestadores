@@ -2630,6 +2630,23 @@
         // ==========================================
         // FETCH DATA (API Pública - funciona via file://)
         // ==========================================
+
+        // Ordem fixa dos campos por query (garante consistência)
+        const QUERY_FIELD_ORDER = {
+            // Query 3622 - Prestadores Ativos
+            '1b070d81-e824-43e3-ad1a-4882d46a4dea': [
+                'email', 'nome_completo', 'OAB', 'WhatsApp', 'Área', 'Experiência',
+                'Nota Prova', 'Acertos Onboarding', 'Média 30d', 'Classificação', 'Tier',
+                'Aprovação Prova', 'Aprovação Onboarding', 'Última Sync', '_nocache'
+            ],
+            // Query 3474 - Área
+            'd5cf4a79-5de3-4481-8b6e-5d2f2add6e0b': null, // usa ordem original
+            // Query 3697 - Tiers
+            'de6c2567-00dc-4686-9cea-3e22394f56b9': null,
+            // Query 3821 - Funil Master
+            '608e08fd-bfc2-45b5-ba64-1c678dc1c21e': null
+        };
+
         async function fetchPublicData(uuid) {
             const url = `${METABASE_CONFIG.baseUrl}/api/public/card/${uuid}/query/json`;
             try {
@@ -2638,7 +2655,10 @@
                 const data = await response.json();
                 // API pública retorna array de objetos, converter para array de arrays
                 if (data && data.length > 0) {
-                    const keys = Object.keys(data[0]);
+                    // Usar ordem fixa se definida, senão usar ordem das chaves
+                    const fieldOrder = QUERY_FIELD_ORDER[uuid];
+                    const keys = fieldOrder || Object.keys(data[0]);
+                    console.log(`[fetchPublicData] UUID ${uuid.substring(0,8)}... - Campos: ${keys.slice(0,5).join(', ')}...`);
                     return data.map(row => keys.map(k => row[k]));
                 }
                 return [];
