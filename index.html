@@ -2668,7 +2668,8 @@
         async function fetchPublicData(uuid) {
             // Usar proxy CORS para evitar bloqueio (mesmo approach do calendario-prestador)
             const corsProxy = 'https://corsproxy.io/?';
-            const metabaseUrl = `${METABASE_CONFIG.baseUrl}/api/public/card/${uuid}/query/json`;
+            const cacheBuster = `_t=${Date.now()}`;
+            const metabaseUrl = `${METABASE_CONFIG.baseUrl}/api/public/card/${uuid}/query/json?${cacheBuster}`;
             const url = corsProxy + encodeURIComponent(metabaseUrl);
             try {
                 const response = await fetch(url);
