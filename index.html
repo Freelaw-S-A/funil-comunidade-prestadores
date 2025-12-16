@@ -4010,7 +4010,7 @@
         let currentPrestador = null;
         let mariaMessages = [];
 
-        function toggleMariaChat() {
+        async function toggleMariaChat() {
             mariaOpen = !mariaOpen;
             const modal = document.getElementById('mariaModal');
             const fab = document.getElementById('mariaFab');
@@ -4018,9 +4018,48 @@
             if (mariaOpen) {
                 modal.classList.add('active');
                 fab.style.display = 'none';
+
+                // Carregar dados automaticamente para a MarIA
+                await carregarDadosMarIA();
             } else {
                 modal.classList.remove('active');
                 fab.style.display = 'flex';
+            }
+        }
+
+        async function carregarDadosMarIA() {
+            // Carregar query 3622 (ativos) se ainda não carregada
+            if (CARTEIRIZACAO_DATA.length === 0) {
+                try {
+                    const rows = await fetchMetabaseData(METABASE_CONFIG.queryAtivosId);
+                    if (rows && rows.length > 0) {
+                        CARTEIRIZACAO_DATA = rows;
+                        console.log(`[MarIA] Query 3622 carregada: ${rows.length} prestadores ativos`);
+                    }
+                } catch (error) {
+                    console.error('[MarIA] Erro ao carregar query 3622:', error);
+                }
+            }
+
+            // Carregar query 3821 (funil) se ainda não carregada
+            if (prestadoresData.length === 0) {
+                try {
+                    const funilRows = await fetchMetabaseData(METABASE_CONFIG.queryFunilMasterId);
+                    if (funilRows && funilRows.length > 0) {
+                        prestadoresData = funilRows.map(row => ({
+                            nome: row[2],
+                            email: row[0],
+                            telefone: row[3],
+                            oab: row[1],
+                            area: row[4],
+                            status: row[19] || 'Inscrito',
+                            notaProva: row[5]
+                        }));
+                        console.log(`[MarIA] Query 3821 carregada: ${funilRows.length} prestadores no funil`);
+                    }
+                } catch (error) {
+                    console.error('[MarIA] Erro ao carregar query 3821:', error);
+                }
             }
         }
 
