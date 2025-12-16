@@ -4371,34 +4371,108 @@
             }, 500);
         }
 
+        // Função auxiliar para formatar datas
+        function formatarData(dataStr) {
+            if (!dataStr) return 'Não informada';
+            try {
+                const data = new Date(dataStr);
+                return data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            } catch {
+                return dataStr;
+            }
+        }
+
         function generateMariaResponse(question) {
             const p = currentPrestador;
             const q = question.toLowerCase();
 
             // Resumo geral
             if (q.includes('resumo') || q.includes('perfil') || q.includes('quem é') || q.includes('sobre')) {
+                let statusEmoji = '✅'; let statusText = 'Ativo';
+                if (p.isBloqueado) { statusEmoji = '🚫'; statusText = 'Bloqueado'; }
+                else if (p.isDesativado) { statusEmoji = '⏸️'; statusText = 'Desativado'; }
+                else if (p.isPendenteAdmin) { statusEmoji = '⏳'; statusText = 'Pendente Admin'; }
+                else if (p.isDesistente) { statusEmoji = '❌'; statusText = 'Desistente'; }
+                else if (!p.isAtivado) { statusEmoji = '🆕'; statusText = 'Em processo'; }
+
                 return `<strong>${p.nome}</strong><br><br>
                     📧 ${p.email}<br>
                     📋 OAB: ${p.oab || 'Não informado'}<br>
                     📱 WhatsApp: ${p.whatsapp || 'Não informado'}<br>
                     ⚖️ Área: ${p.area || 'Não informada'}<br>
                     🏆 Tier: <strong>${p.tier}</strong><br>
-                    📊 Status: ${p.classificacao || 'Não classificado'}`;
+                    ${statusEmoji} Status: <strong>${statusText}</strong><br>
+                    ${p.verificado ? '✓ Verificado' : ''}`;
+            }
+
+            // Status detalhado / Funil
+            if (q.includes('status') || q.includes('funil') || q.includes('situação')) {
+                let statusEmoji = '✅'; let statusText = 'Ativo';
+                if (p.isBloqueado) { statusEmoji = '🚫'; statusText = 'Bloqueado'; }
+                else if (p.isDesativado) { statusEmoji = '⏸️'; statusText = 'Desativado'; }
+                else if (p.isPendenteAdmin) { statusEmoji = '⏳'; statusText = 'Pendente Admin'; }
+                else if (p.isDesistente) { statusEmoji = '❌'; statusText = 'Desistente'; }
+                else if (p.isSaidaVoluntaria) { statusEmoji = '👋'; statusText = 'Saída Voluntária'; }
+                else if (!p.isAtivado && p.isAprovado) { statusEmoji = '🎓'; statusText = 'Aprovado (aguardando ativação)'; }
+                else if (!p.isAprovado && p.isInscrito) { statusEmoji = '📝'; statusText = 'Inscrito (em avaliação)'; }
+                else if (!p.isAtivado) { statusEmoji = '🆕'; statusText = 'Em processo'; }
+
+                let response = `📊 <strong>Status no Funil</strong><br><br>
+                    ${statusEmoji} Status atual: <strong>${statusText}</strong><br>
+                    ${p.statusFunil ? `📋 Posição: ${p.statusFunil}<br>` : ''}
+                    ${p.verificado ? '✓ Prestador verificado<br>' : ''}
+                    ${p.altoVolume ? '📈 Interessado em alto volume<br>' : ''}`;
+
+                if (p.isBloqueado && p.motivoBloqueio) {
+                    response += `<br>⚠️ Motivo do bloqueio: <strong>${p.motivoBloqueio}</strong>`;
+                }
+                if (p.isDesativado && p.motivoDesativacao) {
+                    response += `<br>⚠️ Motivo da desativação: <strong>${p.motivoDesativacao}</strong>`;
+                }
+                if (p.isSaidaVoluntaria && p.motivoSaida) {
+                    response += `<br>💬 Motivo da saída: <strong>${p.motivoSaida}</strong>`;
+                }
+
+                return response;
+            }
+
+            // Datas / Histórico
+            if (q.includes('data') || q.includes('quando') || q.includes('histórico') || q.includes('jornada')) {
+                return `📅 <strong>Histórico de Datas</strong><br><br>
+                    📝 Inscrição: <strong>${formatarData(p.dataInscricao)}</strong><br>
+                    📋 Prova realizada: <strong>${formatarData(p.provaData)}</strong><br>
+                    🎓 Aprovação onboarding: <strong>${formatarData(p.dataAprovacaoOnboarding)}</strong><br>
+                    ${p.dataDesativacao ? `⏸️ Desativação: <strong>${formatarData(p.dataDesativacao)}</strong><br>` : ''}
+                    ${p.dataBloqueio ? `🚫 Bloqueio: <strong>${formatarData(p.dataBloqueio)}</strong><br>` : ''}
+                    ${p.dataSaida ? `👋 Saída: <strong>${formatarData(p.dataSaida)}</strong><br>` : ''}
+                    ${p.dataVerificacao ? `✓ Verificação: <strong>${formatarData(p.dataVerificacao)}</strong>` : ''}`;
+            }
+
+            // Origem / Como conheceu
+            if (q.includes('origem') || q.includes('conheceu') || q.includes('canal') || q.includes('veio')) {
+                const canalEmoji = {
+                    'Google': '🔍', 'LinkedIn': '💼', 'Instagram': '📸',
+                    'Indicação': '👥', 'Outros': '📱'
+                };
+                const emoji = canalEmoji[p.comoConheceu] || '📱';
+                return `🎯 <strong>Origem do Prestador</strong><br><br>
+                    ${emoji} Como conheceu a Freelaw: <strong>${p.comoConheceu || 'Não informado'}</strong>`;
             }
 
             // Nota/Performance
             if (q.includes('nota') || q.includes('prova') || q.includes('desempenho')) {
-                const nota = p.notaProva !== null ? p.notaProva : 'Não realizou';
-                const onboarding = p.acertosOnboarding !== null ? p.acertosOnboarding : 'Não completou';
+                const nota = p.notaProva !== null && p.notaProva !== undefined ? p.notaProva : 'Não realizou';
+                const onboarding = p.acertosOnboarding !== null && p.acertosOnboarding !== undefined ? p.acertosOnboarding : 'Não completou';
                 return `📝 <strong>Performance na Prova</strong><br><br>
                     Nota na prova técnica: <strong>${nota}</strong><br>
-                    Acertos no onboarding: <strong>${onboarding}</strong><br><br>
-                    ${p.notaProva >= 9 ? '🌟 Excelente desempenho!' : p.notaProva >= 7 ? '✅ Aprovado com boa nota.' : '⚠️ Pode melhorar.'}`;
+                    Acertos no onboarding: <strong>${onboarding}</strong><br>
+                    ${p.provaData ? `Data da prova: ${formatarData(p.provaData)}<br>` : ''}<br>
+                    ${p.notaProva >= 9 ? '🌟 Excelente desempenho!' : p.notaProva >= 7 ? '✅ Aprovado com boa nota.' : p.notaProva > 0 ? '⚠️ Pode melhorar.' : ''}`;
             }
 
             // Média 30 dias
             if (q.includes('média') || q.includes('30 dias') || q.includes('avaliação') || q.includes('últimos')) {
-                const media = p.media30d !== null ? p.media30d.toFixed(2) : '0.00';
+                const media = p.media30d !== null && p.media30d !== undefined ? Number(p.media30d).toFixed(2) : '0.00';
                 return `📈 <strong>Média dos últimos 30 dias</strong><br><br>
                     Avaliação média: <strong>${media}</strong><br><br>
                     ${p.media30d >= 4.5 ? '🌟 Prestador com excelentes avaliações!' :
@@ -4427,7 +4501,7 @@
             if (q.includes('área') || q.includes('especialidade') || q.includes('atua')) {
                 return `⚖️ <strong>Área de Atuação</strong><br><br>
                     Especialidade: <strong>${p.area || 'Não informada'}</strong><br>
-                    Experiência: <strong>${p.experiencia || 'Não informada'}</strong>`;
+                    ${p.altoVolume ? '📈 Interessado em alto volume de demandas' : ''}`;
             }
 
             // Contato
@@ -4435,23 +4509,40 @@
                 return `📞 <strong>Informações de Contato</strong><br><br>
                     📧 E-mail: ${p.email}<br>
                     📱 WhatsApp: ${p.whatsapp || 'Não informado'}<br><br>
-                    ${p.whatsapp ? `<a href="https://wa.me/${p.whatsapp.replace(/\D/g, '')}" target="_blank" style="color: #22C55E; text-decoration: none;">💬 Abrir WhatsApp</a>` : ''}`;
+                    ${p.whatsapp ? `<a href="https://wa.me/55${p.whatsapp.replace(/\D/g, '')}" target="_blank" style="color: #22C55E; text-decoration: none;">💬 Abrir WhatsApp</a>` : ''}`;
             }
 
             // Atividade
             if (q.includes('ativo') || q.includes('trabalh') || q.includes('pegou') || q.includes('serviço')) {
-                const pegou = p.classificacao && p.classificacao.includes('Pegou');
+                const pegou = p.classificacao && p.classificacao.toLowerCase().includes('pegou');
                 return `📋 <strong>Status de Atividade</strong><br><br>
-                    ${pegou ? '✅ <strong>Ativo!</strong> Pegou serviço nos últimos 30 dias.' : '❌ <strong>Inativo.</strong> Não pegou serviço nos últimos 30 dias.'}<br><br>
-                    Média de avaliação: <strong>${p.media30d ? p.media30d.toFixed(2) : '0.00'}</strong>`;
+                    ${pegou ? '✅ <strong>Ativo!</strong> Pegou serviço nos últimos 30 dias.' : '❌ <strong>Sem serviços.</strong> Não pegou serviço nos últimos 30 dias.'}<br><br>
+                    Média de avaliação: <strong>${p.media30d ? Number(p.media30d).toFixed(2) : '0.00'}</strong>`;
+            }
+
+            // Bloqueio / Motivo
+            if (q.includes('bloqueio') || q.includes('bloqueado') || q.includes('motivo')) {
+                if (p.isBloqueado) {
+                    return `🚫 <strong>Informações de Bloqueio</strong><br><br>
+                        Status: <strong>Bloqueado</strong><br>
+                        Data: ${formatarData(p.dataBloqueio)}<br>
+                        Motivo: <strong>${p.motivoBloqueio || 'Não especificado'}</strong>`;
+                } else if (p.isDesativado) {
+                    return `⏸️ <strong>Informações de Desativação</strong><br><br>
+                        Status: <strong>Desativado</strong><br>
+                        Data: ${formatarData(p.dataDesativacao)}<br>
+                        Motivo: <strong>${p.motivoDesativacao || 'Não especificado'}</strong>`;
+                } else {
+                    return `✅ Este prestador <strong>não está bloqueado nem desativado</strong>. Status atual: ${p.tier}`;
+                }
             }
 
             // Resposta genérica
             return `Entendi sua pergunta sobre "${question}". Aqui está o que sei sobre <strong>${p.nome.split(' ')[0]}</strong>:<br><br>
                 🏆 Tier: ${p.tier}<br>
                 ⚖️ Área: ${p.area || 'Não informada'}<br>
-                📊 Média 30d: ${p.media30d ? p.media30d.toFixed(2) : '0.00'}<br><br>
-                Posso te ajudar com mais alguma coisa?`;
+                📊 Média 30d: ${p.media30d ? Number(p.media30d).toFixed(2) : '0.00'}<br><br>
+                <strong>Pergunte sobre:</strong> status, datas, nota, tier, contato, origem, bloqueio`;
         }
 
         function handleMariaChatKeypress(e) {
@@ -4464,7 +4555,7 @@
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text);
         }
 
-        function sendMariaMessage() {
+        async function sendMariaMessage() {
             const input = document.getElementById('mariaChatInput');
             const message = input.value.trim();
 
@@ -4475,10 +4566,8 @@
                 addMariaMessage('user', `Buscar: ${message}`);
                 input.value = '';
 
-                // Simular delay
-                setTimeout(() => {
-                    selectPrestador(message);
-                }, 300);
+                // Buscar prestador (async)
+                await selectPrestador(message);
             } else {
                 // É uma pergunta
                 if (!currentPrestador) {
@@ -4496,6 +4585,9 @@
 
         // Inicializar MarIA
         document.addEventListener('DOMContentLoaded', function() {
+            // Pré-carregar dados da MarIA em background
+            carregarDadosMarIA();
+
             // Adicionar mensagem inicial
             setTimeout(() => {
                 if (document.getElementById('mariaMessages').children.length === 0) {
