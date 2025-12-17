@@ -3600,18 +3600,31 @@
                 if (response.ok) {
                     const rawData = await response.json();
 
+                    // Função para calcular segmento de carteirização
+                    const calcularSegmento = (media) => {
+                        if (!media || parseFloat(media) === 0) return { label: 'Sem Avaliação', cor: '#DD2869' };
+                        const m = parseFloat(media);
+                        if (m >= 4.5) return { label: 'Alta Performance', cor: '#22C55E' };
+                        if (m >= 4.0) return { label: 'Bom Desempenho', cor: '#3B82F6' };
+                        return { label: 'Em Desenvolvimento', cor: '#ECB43D' };
+                    };
+
                     // Mapear campos para compatibilidade
-                    const data = rawData.map(p => ({
-                        nome: p.nome_completo,
-                        email: p.email,
-                        capacity: p.producao_media_diaria,
-                        tier_admin: p.tier_admin,
-                        media_nota_30d: p.media_nota_30d,
-                        area: p.area_atuacao_principal,
-                        classificacao: p.classificacao,
-                        total_servicos: p.total_servicos_aceitos || 0,
-                        segmento: p.segmento_carteirizacao || '-'
-                    }));
+                    const data = rawData.map(p => {
+                        const seg = calcularSegmento(p.media_nota_30d);
+                        return {
+                            nome: p.nome_completo,
+                            email: p.email,
+                            capacity: p.producao_media_diaria,
+                            tier_admin: p.tier_admin,
+                            media_nota_30d: p.media_nota_30d,
+                            area: p.area_atuacao_principal,
+                            classificacao: p.classificacao,
+                            total_servicos: p.total_servicos_aceitos || 0,
+                            segmento: seg.label,
+                            segmentoCor: seg.cor
+                        };
+                    });
 
                     console.log('%c✅ CAPACITY - prestadores_ativos_inscricoes', 'background: #10B981; color: white; padding: 2px 6px; border-radius: 4px;', `${data.length} prestadores`);
 
@@ -3787,6 +3800,7 @@
                 const media30d = p.media_nota_30d ? parseFloat(p.media_nota_30d).toFixed(1) : 0;
                 const servicosAceitos = p.media_nota_30d ? Math.round(parseFloat(p.media_nota_30d)) : 0;
                 const segmento = p.segmento || '-';
+                const segmentoCor = p.segmentoCor || '#6B7280';
 
                 // Calcular utilização (média real / capacity declarada * 100)
                 const utilizacao = capacityNum > 0 ? Math.min(Math.round((media30d / capacityNum) * 100), 100) : 0;
@@ -3810,7 +3824,10 @@
                             <span style="padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; background: ${tierStyle.bg}; color: ${tierStyle.color}; text-transform: uppercase;">${tier}</span>
                         </td>
                         <td style="padding: 16px;">
-                            <span style="font-size: 0.85rem; color: #374151;">${segmento}</span>
+                            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: ${segmentoCor}; font-weight: 500;">
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: ${segmentoCor};"></span>
+                                ${segmento}
+                            </span>
                         </td>
                         <td style="padding: 16px;">
                             <span style="font-size: 1.25rem; font-weight: 700; color: #111827;">${capacityNum}</span>
