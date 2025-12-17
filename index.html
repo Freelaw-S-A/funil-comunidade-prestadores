@@ -2524,6 +2524,16 @@
                     </button>
                 </div>
 
+                <!-- Capacity por Área -->
+                <div style="background: white; border-radius: 12px; border: 1px solid #E5E7EB; padding: 24px; margin-bottom: 24px;">
+                    <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0 0 20px 0;">Capacity por Área de Atuação</h3>
+                    <div id="capacityPorAreaGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+                        <div style="text-align: center; padding: 16px; background: #F9FAFB; border-radius: 8px;">
+                            <div style="font-size: 0.75rem; color: #6B7280; margin-bottom: 4px;">Carregando...</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Tabela de prestadores por capacity -->
                 <div style="background: white; border-radius: 12px; border: 1px solid #E5E7EB; overflow: hidden;">
                     <div style="padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center;">
@@ -2546,7 +2556,7 @@
                                 <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Tier</th>
                                 <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Segmento</th>
                                 <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Capacity</th>
-                                <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Serviços</th>
+                                <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Serviços Aceitos</th>
                                 <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Utilização</th>
                                 <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Status de Entrega</th>
                             </tr>
@@ -3653,6 +3663,9 @@
                     const insightText = gerarInsightCapacity(counts, totalCapacity, prestadoresComCapacity, highPerformers, mediaProducao);
                     document.getElementById('capacityInsightText').textContent = `"${insightText}"`;
 
+                    // Renderizar Capacity por Área
+                    renderCapacityPorArea(data, capacityValues);
+
                     // Preencher tabela com novo layout
                     renderCapacityTable(data, capacityValues);
 
@@ -3674,6 +3687,56 @@
 
             const percHighPerf = ((highPerf / ativos) * 100).toFixed(0);
             return `Sua capacidade total é de ${Math.round(total)} peças/dia com ${ativos} prestadores ativos. A maioria (${maiorFaixa[1]}) está na faixa de ${faixaLabel[maiorFaixa[0]]} peças/dia. ${percHighPerf}% são High Performers com média ≥10.`;
+        }
+
+        function renderCapacityPorArea(data, capacityValues) {
+            const grid = document.getElementById('capacityPorAreaGrid');
+            if (!grid) return;
+
+            // Agrupar por área
+            const areaData = {};
+            data.forEach(p => {
+                const area = p.area || 'Não informado';
+                if (!areaData[area]) {
+                    areaData[area] = { total: 0, capacitySum: 0, prestadores: 0 };
+                }
+                areaData[area].prestadores++;
+                if (p.capacity && capacityValues[p.capacity]) {
+                    areaData[area].total++;
+                    areaData[area].capacitySum += capacityValues[p.capacity];
+                }
+            });
+
+            // Ordenar por capacity total
+            const sortedAreas = Object.entries(areaData)
+                .sort((a, b) => b[1].capacitySum - a[1].capacitySum);
+
+            // Cores para cada área
+            const areaColors = {
+                'Direito Civil': '#6366F1',
+                'Direito Trabalhista': '#EC4899',
+                'Direito Previdenciário': '#F59E0B',
+                'Direito Penal': '#EF4444',
+                'Direito Tributário': '#10B981',
+                'Direito Empresarial': '#8B5CF6',
+                'Direito Administrativo': '#06B6D4',
+                'Outras áreas': '#6B7280'
+            };
+
+            grid.innerHTML = sortedAreas.map(([area, info]) => {
+                const color = areaColors[area] || '#6B7280';
+                const capacityTotal = Math.round(info.capacitySum);
+                return `
+                    <div style="padding: 16px; background: #F9FAFB; border-radius: 8px; border-left: 4px solid ${color};">
+                        <div style="font-size: 0.8rem; color: #6B7280; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${area}">${area}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                            <span style="font-size: 1.5rem; font-weight: 700; color: #111827;">${capacityTotal}</span>
+                            <span style="font-size: 0.75rem; color: #9CA3AF;">p/dia</span>
+                        </div>
+                        <div style="font-size: 0.7rem; color: #6B7280; margin-top: 4px;">${info.prestadores} prestadores</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // Armazenar dados globalmente para filtro
@@ -3722,7 +3785,7 @@
                 const tier = p.tier_admin || '-';
                 const tierStyle = tierColors[tier] || { bg: '#6B7280', color: '#FFFFFF' };
                 const media30d = p.media_nota_30d ? parseFloat(p.media_nota_30d).toFixed(1) : 0;
-                const totalServicos = p.total_servicos || 0;
+                const servicosAceitos = p.media_nota_30d ? Math.round(parseFloat(p.media_nota_30d)) : 0;
                 const segmento = p.segmento || '-';
 
                 // Calcular utilização (média real / capacity declarada * 100)
@@ -3754,7 +3817,7 @@
                             <span style="color: #9CA3AF; font-size: 0.8rem;"> p/dia</span>
                         </td>
                         <td style="padding: 16px;">
-                            <span style="font-size: 1.25rem; font-weight: 700; color: #6366F1;">${totalServicos}</span>
+                            <span style="font-size: 1.25rem; font-weight: 700; color: #6366F1;">${servicosAceitos}</span>
                         </td>
                         <td style="padding: 16px;">
                             <span style="font-size: 1rem; font-weight: 600; color: ${barColor};">${utilizacao}%</span>
