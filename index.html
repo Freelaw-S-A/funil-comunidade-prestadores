@@ -2444,7 +2444,12 @@
                 </header>
 
                 <!-- Cards de resumo -->
-                <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 24px;">
+                <div class="stats-grid" style="grid-template-columns: repeat(6, 1fr); margin-bottom: 24px;">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #ECB43D 0%, #D4A339 100%); border: none;">
+                        <div class="stat-label" style="color: rgba(0,0,0,0.7);">Capacidade Total</div>
+                        <div class="stat-value" id="capacityTotal" style="color: #000;">-</div>
+                        <div class="stat-label" style="color: rgba(0,0,0,0.5); font-size: 0.7rem; margin-top: 4px;">peças/dia</div>
+                    </div>
                     <div class="stat-card">
                         <div class="stat-label">1-2 peças/dia</div>
                         <div class="stat-value" id="capacity1_2">-</div>
@@ -3523,7 +3528,16 @@
                     console.log('%c✅ CAPACITY SUPABASE', 'background: #10B981; color: white; padding: 2px 6px; border-radius: 4px;', `${data.length} prestadores`);
                     updateDataSourceBadge(true, 'dataSourceBadgeCapacity');
 
-                    // Contar por capacity
+                    // Valores médios para cada faixa de capacity (para cálculo de total)
+                    const capacityValues = {
+                        '1–2': 1.5,
+                        '3–5': 4,
+                        '6–10': 8,
+                        '11–15': 13,
+                        'mais-15': 20
+                    };
+
+                    // Contar por capacity e calcular total
                     const counts = {
                         '1–2': 0,
                         '3–5': 0,
@@ -3532,13 +3546,19 @@
                         'mais-15': 0
                     };
 
+                    let totalCapacity = 0;
+
                     data.forEach(p => {
                         if (p.capacity && counts.hasOwnProperty(p.capacity)) {
                             counts[p.capacity]++;
+                            totalCapacity += capacityValues[p.capacity] || 0;
                         }
                     });
 
-                    // Atualizar cards
+                    // Atualizar card de Capacidade Total
+                    document.getElementById('capacityTotal').textContent = Math.round(totalCapacity);
+
+                    // Atualizar cards de contagem
                     document.getElementById('capacity1_2').textContent = counts['1–2'];
                     document.getElementById('capacity3_5').textContent = counts['3–5'];
                     document.getElementById('capacity6_10').textContent = counts['6–10'];
