@@ -2991,82 +2991,77 @@
                 total += count;
             });
 
+            // Função auxiliar para atualizar elemento com segurança
+            const safeUpdate = (id, value, property = 'textContent') => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (property === 'textContent') el.textContent = value;
+                    else if (property === 'width') el.style.width = value;
+                    else if (property === 'title') el.title = value;
+                }
+            };
+
             // Atualizar cards de tier e funil ampulheta
             if (tierMap['Tier S']) {
-                document.getElementById('tierSCount').textContent = tierMap['Tier S'].count;
-                document.getElementById('tierSPerc').textContent = tierMap['Tier S'].perc + '%';
-                document.getElementById('barTierS').style.width = tierMap['Tier S'].perc + '%';
-                document.getElementById('barTierS').title = 'Tier S: ' + tierMap['Tier S'].count;
-                // Funil
-                if (document.getElementById('funnelTierS')) {
-                    document.getElementById('funnelTierS').textContent = tierMap['Tier S'].count;
-                    document.getElementById('funnelTierSPerc').textContent = tierMap['Tier S'].perc + '%';
-                }
+                safeUpdate('tierSCount', tierMap['Tier S'].count);
+                safeUpdate('tierSPerc', tierMap['Tier S'].perc + '%');
+                safeUpdate('barTierS', tierMap['Tier S'].perc + '%', 'width');
+                safeUpdate('barTierS', 'Tier S: ' + tierMap['Tier S'].count, 'title');
+                safeUpdate('funnelTierS', tierMap['Tier S'].count);
+                safeUpdate('funnelTierSPerc', tierMap['Tier S'].perc + '%');
             }
             if (tierMap['Tier A']) {
-                document.getElementById('tierACount').textContent = tierMap['Tier A'].count;
-                document.getElementById('tierAPerc').textContent = tierMap['Tier A'].perc + '%';
-                document.getElementById('barTierA').style.width = tierMap['Tier A'].perc + '%';
-                document.getElementById('barTierA').title = 'Tier A: ' + tierMap['Tier A'].count;
-                // Funil
-                if (document.getElementById('funnelTierA')) {
-                    document.getElementById('funnelTierA').textContent = tierMap['Tier A'].count;
-                    document.getElementById('funnelTierAPerc').textContent = tierMap['Tier A'].perc + '%';
-                }
+                safeUpdate('tierACount', tierMap['Tier A'].count);
+                safeUpdate('tierAPerc', tierMap['Tier A'].perc + '%');
+                safeUpdate('barTierA', tierMap['Tier A'].perc + '%', 'width');
+                safeUpdate('barTierA', 'Tier A: ' + tierMap['Tier A'].count, 'title');
+                safeUpdate('funnelTierA', tierMap['Tier A'].count);
+                safeUpdate('funnelTierAPerc', tierMap['Tier A'].perc + '%');
             }
             if (tierMap['Tier B']) {
-                document.getElementById('tierBCount').textContent = tierMap['Tier B'].count;
-                document.getElementById('tierBPerc').textContent = tierMap['Tier B'].perc + '%';
-                document.getElementById('barTierB').style.width = tierMap['Tier B'].perc + '%';
-                document.getElementById('barTierB').title = 'Tier B: ' + tierMap['Tier B'].count;
-                // Funil
-                if (document.getElementById('funnelTierB')) {
-                    document.getElementById('funnelTierB').textContent = tierMap['Tier B'].count;
-                    document.getElementById('funnelTierBPerc').textContent = tierMap['Tier B'].perc + '%';
-                }
+                safeUpdate('tierBCount', tierMap['Tier B'].count);
+                safeUpdate('tierBPerc', tierMap['Tier B'].perc + '%');
+                safeUpdate('barTierB', tierMap['Tier B'].perc + '%', 'width');
+                safeUpdate('barTierB', 'Tier B: ' + tierMap['Tier B'].count, 'title');
+                safeUpdate('funnelTierB', tierMap['Tier B'].count);
+                safeUpdate('funnelTierBPerc', tierMap['Tier B'].perc + '%');
             }
             if (tierMap['Tier C']) {
-                document.getElementById('tierCCount').textContent = tierMap['Tier C'].count;
-                document.getElementById('tierCPerc').textContent = tierMap['Tier C'].perc + '%';
-                document.getElementById('barTierC').style.width = tierMap['Tier C'].perc + '%';
-                document.getElementById('barTierC').title = 'Tier C: ' + tierMap['Tier C'].count;
-                // Funil
-                if (document.getElementById('funnelTierC')) {
-                    document.getElementById('funnelTierC').textContent = tierMap['Tier C'].count;
-                    document.getElementById('funnelTierCPerc').textContent = tierMap['Tier C'].perc + '%';
-                }
+                safeUpdate('tierCCount', tierMap['Tier C'].count);
+                safeUpdate('tierCPerc', tierMap['Tier C'].perc + '%');
+                safeUpdate('barTierC', tierMap['Tier C'].perc + '%', 'width');
+                safeUpdate('barTierC', 'Tier C: ' + tierMap['Tier C'].count, 'title');
+                safeUpdate('funnelTierC', tierMap['Tier C'].count);
+                safeUpdate('funnelTierCPerc', tierMap['Tier C'].perc + '%');
             }
             if (tierMap['Tier D']) {
-                document.getElementById('tierDCount').textContent = tierMap['Tier D'].count;
-                document.getElementById('tierDPerc').textContent = tierMap['Tier D'].perc + '%';
-                document.getElementById('barTierD').style.width = tierMap['Tier D'].perc + '%';
-                document.getElementById('barTierD').title = 'Tier D: ' + tierMap['Tier D'].count;
-                // Funil
-                if (document.getElementById('funnelTierD')) {
-                    document.getElementById('funnelTierD').textContent = tierMap['Tier D'].count;
-                    document.getElementById('funnelTierDPerc').textContent = tierMap['Tier D'].perc + '%';
-                }
+                safeUpdate('tierDCount', tierMap['Tier D'].count);
+                safeUpdate('tierDPerc', tierMap['Tier D'].perc + '%');
+                safeUpdate('barTierD', tierMap['Tier D'].perc + '%', 'width');
+                safeUpdate('barTierD', 'Tier D: ' + tierMap['Tier D'].count, 'title');
+                safeUpdate('funnelTierD', tierMap['Tier D'].count);
+                safeUpdate('funnelTierDPerc', tierMap['Tier D'].perc + '%');
             }
             if (tierMap['Onboarding']) {
-                document.getElementById('tierOnboardingCount').textContent = tierMap['Onboarding'].count;
-                document.getElementById('tierOnboardingPerc').textContent = tierMap['Onboarding'].perc + '%';
-                document.getElementById('barOnboarding').style.width = tierMap['Onboarding'].perc + '%';
-                document.getElementById('barOnboarding').textContent = 'Onboarding (' + tierMap['Onboarding'].count + ')';
-                document.getElementById('barOnboarding').title = 'Onboarding: ' + tierMap['Onboarding'].count;
+                safeUpdate('tierOnboardingCount', tierMap['Onboarding'].count);
+                safeUpdate('tierOnboardingPerc', tierMap['Onboarding'].perc + '%');
+                safeUpdate('barOnboarding', tierMap['Onboarding'].perc + '%', 'width');
+                safeUpdate('barOnboarding', 'Onboarding: ' + tierMap['Onboarding'].count, 'title');
+                safeUpdate('funnelOnboarding', tierMap['Onboarding'].count);
+                safeUpdate('funnelOnboardingPerc', tierMap['Onboarding'].perc + '%');
             }
             if (tierMap['Inativo']) {
-                document.getElementById('tierInativoCount').textContent = tierMap['Inativo'].count;
-                document.getElementById('tierInativoPerc').textContent = tierMap['Inativo'].perc + '%';
-                document.getElementById('barInativo').style.width = tierMap['Inativo'].perc + '%';
-                document.getElementById('barInativo').title = 'Inativo: ' + tierMap['Inativo'].count;
+                safeUpdate('tierInativoCount', tierMap['Inativo'].count);
+                safeUpdate('tierInativoPerc', tierMap['Inativo'].perc + '%');
+                safeUpdate('barInativo', tierMap['Inativo'].perc + '%', 'width');
+                safeUpdate('barInativo', 'Inativo: ' + tierMap['Inativo'].count, 'title');
+                safeUpdate('funnelInativo', tierMap['Inativo'].count);
+                safeUpdate('funnelInativoPerc', tierMap['Inativo'].perc + '%');
             }
 
             // Atualizar totais
-            document.getElementById('totalAtivadosTier').textContent = total.toLocaleString('pt-BR');
-            // Atualizar funnelAtivos no centro da ampulheta
-            if (document.getElementById('funnelAtivos')) {
-                document.getElementById('funnelAtivos').textContent = total.toLocaleString('pt-BR');
-            }
+            safeUpdate('totalAtivadosTier', total.toLocaleString('pt-BR'));
+            safeUpdate('funnelAtivos', total.toLocaleString('pt-BR'));
 
             // Calcular total com Tier (S-D)
             const totalComTier = (tierMap['Tier S']?.count || 0) +
@@ -3074,12 +3069,15 @@
                                  (tierMap['Tier B']?.count || 0) +
                                  (tierMap['Tier C']?.count || 0) +
                                  (tierMap['Tier D']?.count || 0);
-            document.getElementById('totalComTier').textContent = totalComTier.toLocaleString('pt-BR');
+            safeUpdate('totalComTier', totalComTier.toLocaleString('pt-BR'));
+
             // Percentagem do tier em relação aos ativos
-            if (document.getElementById('tierPercTotal') && total > 0) {
+            if (total > 0) {
                 const tierPerc = ((totalComTier / total) * 100).toFixed(1);
-                document.getElementById('tierPercTotal').textContent = tierPerc + '%';
+                safeUpdate('tierPercTotal', tierPerc + '%');
             }
+
+            console.log(`   Tiers carregados: Total=${total}, Com Tier S-D=${totalComTier}`);
         }
 
         // ==========================================
