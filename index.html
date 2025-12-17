@@ -4219,7 +4219,7 @@
             document.getElementById('mariaSuggestions').style.display = 'none';
         }
 
-        function askMaria(question) {
+        async function askMaria(question) {
             if (!currentPrestador) {
                 addMariaMessage('bot', 'Por favor, informe primeiro o e-mail do prestador que você quer consultar.');
                 return;
@@ -4228,12 +4228,79 @@
             addMariaMessage('user', question);
             hideSuggestions();
 
-            // Simular delay de digitação
-            setTimeout(() => {
-                const response = generateMariaResponse(question);
-                addMariaMessage('bot', response);
-                showSuggestions();
-            }, 500);
+            // Mostrar indicador de "digitando"
+            const typingId = showTypingIndicator();
+
+            try {
+                // Chamar Edge Function com Claude
+                const response = await fetch(`${SUPABASE_CONFIG.url}/functions/v1/maria-chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+                    },
+                    body: JSON.stringify({
+                        message: question,
+                        prestador: currentPrestador,
+                        context: {
+                            funilData: {
+                                inscricoes: document.getElementById('funnelInscricoes')?.textContent,
+                                ativos: document.getElementById('funnelAtivos')?.textContent
+                            }
+                        }
+                    })
+                });
+
+                removeTypingIndicator(typingId);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    addMariaMessage('bot', data.response);
+
+                    // Mostrar badge de fonte da resposta
+                    if (data.source === 'claude') {
+                        console.log('[MarIA] Resposta via Claude AI');
+                    } else {
+                        console.log('[MarIA] Resposta via fallback local');
+                    }
+                } else {
+                    // Fallback para resposta local se edge function falhar
+                    const localResponse = generateMariaResponse(question);
+                    addMariaMessage('bot', localResponse);
+                    console.log('[MarIA] Usando fallback local - edge function indisponível');
+                }
+            } catch (error) {
+                removeTypingIndicator(typingId);
+                console.error('[MarIA] Erro:', error);
+                // Fallback local
+                const localResponse = generateMariaResponse(question);
+                addMariaMessage('bot', localResponse);
+            }
+
+            showSuggestions();
+        }
+
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('mariaMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'maria-message bot maria-typing-message';
+            typingDiv.id = 'mariaTyping-' + Date.now();
+            typingDiv.innerHTML = `
+                <div class="maria-message-avatar">🤖</div>
+                <div class="maria-message-content">
+                    <div class="maria-typing">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return typingDiv.id;
+        }
+
+        function removeTypingIndicator(id) {
+            const typing = document.getElementById(id);
+            if (typing) typing.remove();
         }
 
         function generateMariaResponse(question) {
