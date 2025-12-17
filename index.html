@@ -4202,9 +4202,39 @@
                         // Atualizar placeholder do input
                         document.getElementById('mariaChatInput').placeholder = 'Faça uma pergunta sobre ' + currentPrestador.nome.split(' ')[0] + '...';
 
-                        // Mensagem de boas-vindas personalizada
-                        const sourceInfo = currentPrestador.source === 'providers_provider' ? '(ativo na plataforma)' : '(inscrito no funil)';
-                        addMariaMessage('bot', `Encontrei! <strong>${currentPrestador.nome.split(' ')[0]}</strong> está no <strong>${currentPrestador.tier}</strong> ${sourceInfo}.<br><br>Dados carregados em tempo real do <strong>Supabase</strong>. O que você gostaria de saber?`);
+                        // Mensagem de boas-vindas com STATUS DETALHADO
+                        const primeiroNome = currentPrestador.nome.split(' ')[0];
+                        let mensagemBoasVindas = `Encontrei <strong>${primeiroNome}</strong>! `;
+
+                        if (currentPrestador.statusProcesso === 'ATIVO_PLATAFORMA') {
+                            mensagemBoasVindas += `<br><br>✅ <strong>ATIVO NA PLATAFORMA</strong><br>`;
+                            mensagemBoasVindas += `🏆 Tier: <strong>${currentPrestador.tier}</strong><br>`;
+                            mensagemBoasVindas += `📊 Média 30d: ${currentPrestador.media30d ? Number(currentPrestador.media30d).toFixed(2) : 'Sem avaliações'}`;
+                        } else {
+                            // Mostrar status do processo de inscrição
+                            mensagemBoasVindas += `<br><br>📋 <strong>Status: ${currentPrestador.statusDescricao}</strong><br><br>`;
+
+                            // Barra de progresso
+                            mensagemBoasVindas += `<strong>Etapa ${currentPrestador.etapaAtual} de ${currentPrestador.totalEtapas}</strong><br>`;
+
+                            // Etapas visuais
+                            if (currentPrestador.etapas) {
+                                currentPrestador.etapas.forEach(etapa => {
+                                    const icon = etapa.concluida ? '✅' : (etapa.num === currentPrestador.etapaAtual ? '🟡' : '⚪');
+                                    mensagemBoasVindas += `${icon} ${etapa.nome}<br>`;
+                                });
+                            }
+
+                            // Bloqueio se houver
+                            if (currentPrestador.bloqueio) {
+                                mensagemBoasVindas += `<br>⚠️ <strong>Atenção:</strong> ${currentPrestador.bloqueio}<br>`;
+                            }
+
+                            // Próxima ação
+                            mensagemBoasVindas += `<br>👉 <strong>Próximo passo:</strong> ${currentPrestador.proximaAcao}`;
+                        }
+
+                        addMariaMessage('bot', mensagemBoasVindas);
                         showSuggestions();
                     } else {
                         addMariaMessage('bot', `Não encontrei nenhum prestador com o e-mail <strong>${email}</strong>. Verifique se está correto ou tente outro.`);
