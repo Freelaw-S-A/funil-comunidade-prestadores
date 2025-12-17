@@ -3588,8 +3588,8 @@
 
         async function carregarCapacity() {
             try {
-                // Buscar dados de capacity do Supabase
-                const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/prestadores_gestao_atividade?select=nome,email,capacity,tier_admin,media_nota_30d,ativo_plataforma&ativo_plataforma=eq.true`, {
+                // Buscar dados de capacity do Supabase - tabela prestadores_ativos_inscricoes
+                const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/prestadores_ativos_inscricoes?select=nome_completo,email,producao_media_diaria,tier_admin,media_nota_30d,area_atuacao_principal,classificacao`, {
                     headers: {
                         'apikey': SUPABASE_CONFIG.anonKey,
                         'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
@@ -3597,8 +3597,20 @@
                 });
 
                 if (response.ok) {
-                    const data = await response.json();
-                    console.log('%c✅ CAPACITY SUPABASE', 'background: #10B981; color: white; padding: 2px 6px; border-radius: 4px;', `${data.length} prestadores`);
+                    const rawData = await response.json();
+
+                    // Mapear campos para compatibilidade
+                    const data = rawData.map(p => ({
+                        nome: p.nome_completo,
+                        email: p.email,
+                        capacity: p.producao_media_diaria,
+                        tier_admin: p.tier_admin,
+                        media_nota_30d: p.media_nota_30d,
+                        area: p.area_atuacao_principal,
+                        classificacao: p.classificacao
+                    }));
+
+                    console.log('%c✅ CAPACITY - prestadores_ativos_inscricoes', 'background: #10B981; color: white; padding: 2px 6px; border-radius: 4px;', `${data.length} prestadores`);
 
                     // Valores médios para cada faixa de capacity
                     const capacityValues = {
