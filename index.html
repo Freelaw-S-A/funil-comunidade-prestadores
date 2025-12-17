@@ -2378,6 +2378,10 @@
                     <div class="header-left">
                         <h1 class="header-title">Canais de Entrada</h1>
                         <span class="header-meta">Origem dos prestadores inscritos na plataforma</span>
+                        <span class="data-source-badge" id="dataSourceBadgeCanais" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-left: 10px; background: #FEF3C7; color: #92400E;">
+                            <span class="badge-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B;"></span>
+                            Carregando...
+                        </span>
                     </div>
                 </header>
 
@@ -2725,8 +2729,8 @@
         // ==========================================
         // INDICADOR DE FONTE DE DADOS
         // ==========================================
-        function updateDataSourceBadge(isSupabase, details = '') {
-            const badge = document.getElementById('dataSourceBadge');
+        function updateDataSourceBadge(isSupabase, badgeId = 'dataSourceBadge') {
+            const badge = document.getElementById(badgeId);
             if (!badge) return;
 
             if (isSupabase) {
@@ -3448,6 +3452,7 @@
 
                 if (rows && rows.length > 0) {
                     console.log('%c✅ CANAIS SUPABASE', 'background: #10B981; color: white; padding: 2px 6px; border-radius: 4px;', `${rows.length} registros para análise`);
+                    updateDataSourceBadge(true, 'dataSourceBadgeCanais');
                     const data = processCanaisData(rows);
                     renderCanaisCards(data);
                     renderCharts(data);
@@ -3455,11 +3460,13 @@
                     renderAreasTable(data);
                 } else {
                     console.warn('%c⚠️ CANAIS FALLBACK', 'background: #F59E0B; color: black; padding: 2px 6px; border-radius: 4px;');
+                    updateDataSourceBadge(false, 'dataSourceBadgeCanais');
                     usarFallbackCanais();
                 }
             } catch (error) {
                 console.error('Erro ao carregar canais:', error);
                 console.warn('%c⚠️ CANAIS FALLBACK (erro)', 'background: #F59E0B; color: black; padding: 2px 6px; border-radius: 4px;');
+                updateDataSourceBadge(false, 'dataSourceBadgeCanais');
                 usarFallbackCanais();
             }
         }
