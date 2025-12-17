@@ -2534,22 +2534,31 @@
 
                 <!-- Tabela de prestadores por capacity -->
                 <div style="background: white; border-radius: 12px; border: 1px solid #E5E7EB; overflow: hidden;">
-                    <div style="padding: 20px 24px; border-bottom: 1px solid #E5E7EB;">
+                    <div style="padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center;">
                         <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0;">Prestadores por Capacity</h3>
+                        <div style="display: flex; gap: 12px;">
+                            <input type="text" id="capacitySearchInput" placeholder="Buscar prestador..." onkeyup="filtrarTabelaCapacity()" style="padding: 8px 14px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 0.875rem; width: 200px; outline: none;">
+                            <select id="capacityTierFilter" onchange="filtrarTabelaCapacity()" style="padding: 8px 14px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 0.875rem; background: white; cursor: pointer; outline: none;">
+                                <option value="">Todos Tiers</option>
+                                <option value="Gold">Gold</option>
+                                <option value="Silver">Silver</option>
+                                <option value="Bronze">Bronze</option>
+                                <option value="Platinum">Platinum</option>
+                            </select>
+                        </div>
                     </div>
                     <table style="width: 100%; border-collapse: collapse;" id="capacityTable">
                         <thead>
                             <tr style="background: #F9FAFB;">
-                                <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Nome</th>
-                                <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Email</th>
-                                <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Capacity</th>
+                                <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Prestador</th>
                                 <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Tier</th>
-                                <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Média 30D</th>
-                                <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Status</th>
+                                <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Capacity</th>
+                                <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Utilização</th>
+                                <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Status de Entrega</th>
                             </tr>
                         </thead>
                         <tbody id="capacityTableBody">
-                            <tr><td colspan="6" style="text-align: center; padding: 40px; color: #6B7280;">Carregando...</td></tr>
+                            <tr><td colspan="5" style="text-align: center; padding: 40px; color: #6B7280;">Carregando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -3705,7 +3714,16 @@
             return `Sua capacidade total é de ${Math.round(total)} peças/dia com ${ativos} prestadores ativos. A maioria (${maiorFaixa[1]}) está na faixa de ${faixaLabel[maiorFaixa[0]]} peças/dia. ${percHighPerf}% são High Performers com média ≥10.`;
         }
 
+        // Armazenar dados globalmente para filtro
+        let capacityTableData = [];
+
         function renderCapacityTable(data, capacityValues) {
+            // Armazenar dados para filtro
+            capacityTableData = data.filter(p => p.capacity);
+            renderCapacityTableRows(capacityTableData);
+        }
+
+        function renderCapacityTableRows(data) {
             const tbody = document.getElementById('capacityTableBody');
 
             const capacityNumeric = {
@@ -3713,10 +3731,10 @@
             };
 
             const tierColors = {
-                'Gold': { bg: '#FEF3C7', color: '#D97706' },
-                'Silver': { bg: '#F3F4F6', color: '#6B7280' },
-                'Bronze': { bg: '#FED7AA', color: '#C2410C' },
-                'Platinum': { bg: '#E0E7FF', color: '#4F46E5' }
+                'Gold': { bg: '#EF4444', color: '#FFFFFF' },
+                'Silver': { bg: '#6B7280', color: '#FFFFFF' },
+                'Bronze': { bg: '#F97316', color: '#FFFFFF' },
+                'Platinum': { bg: '#8B5CF6', color: '#FFFFFF' }
             };
 
             const getInitialColor = (name) => {
@@ -3725,60 +3743,78 @@
                 return colors[index];
             };
 
-            const filteredData = data
-                .filter(p => p.capacity)
-                .sort((a, b) => {
-                    const order = ['mais-15', '11–15', '6–10', '3–5', '1–2'];
-                    return order.indexOf(a.capacity) - order.indexOf(b.capacity);
-                });
+            const sortedData = data.sort((a, b) => {
+                const order = ['mais-15', '11–15', '6–10', '3–5', '1–2'];
+                return order.indexOf(a.capacity) - order.indexOf(b.capacity);
+            });
 
-            if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #6B7280;">Nenhum prestador com capacity cadastrado</td></tr>';
+            if (sortedData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #6B7280;">Nenhum prestador encontrado</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = filteredData.map(p => {
+            tbody.innerHTML = sortedData.map(p => {
                 const inicial = (p.nome || 'P').charAt(0).toUpperCase();
                 const corInicial = getInitialColor(p.nome);
                 const capacityNum = capacityNumeric[p.capacity] || 0;
                 const tier = p.tier_admin || '-';
-                const tierStyle = tierColors[tier] || { bg: '#F3F4F6', color: '#6B7280' };
+                const tierStyle = tierColors[tier] || { bg: '#6B7280', color: '#FFFFFF' };
                 const media30d = p.media_nota_30d ? parseFloat(p.media_nota_30d).toFixed(1) : 0;
-                const progressWidth = Math.min((media30d / 15) * 100, 100);
+
+                // Calcular utilização (média real / capacity declarada * 100)
+                const utilizacao = capacityNum > 0 ? Math.min(Math.round((media30d / capacityNum) * 100), 100) : 0;
+
+                // Cor da barra baseada na utilização
+                const barColor = utilizacao >= 90 ? '#10B981' : utilizacao >= 70 ? '#6366F1' : '#F59E0B';
+                const progressWidth = Math.min((media30d / 20) * 100, 100);
 
                 return `
-                    <tr style="border-bottom: 1px solid #F3F4F6;">
+                    <tr style="border-bottom: 1px solid #F3F4F6;" data-nome="${(p.nome || '').toLowerCase()}" data-email="${(p.email || '').toLowerCase()}" data-tier="${tier}">
                         <td style="padding: 16px 24px;">
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <div style="width: 36px; height: 36px; border-radius: 50%; background: ${corInicial}; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem;">${inicial}</div>
-                                <span style="font-weight: 500; color: #111827;">${p.nome || '-'}</span>
-                            </div>
-                        </td>
-                        <td style="padding: 16px; color: #6B7280;">${p.email || '-'}</td>
-                        <td style="padding: 16px;">
-                            <span style="font-weight: 600; color: #111827;">${capacityNum}</span>
-                            <span style="color: #9CA3AF; font-size: 0.85rem;"> peças/dia</span>
-                        </td>
-                        <td style="padding: 16px;">
-                            <span style="padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; background: ${tierStyle.bg}; color: ${tierStyle.color};">${tier}</span>
-                        </td>
-                        <td style="padding: 16px;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="flex: 1; height: 8px; background: #E5E7EB; border-radius: 4px; overflow: hidden; max-width: 100px;">
-                                    <div style="width: ${progressWidth}%; height: 100%; background: #6366F1; border-radius: 4px;"></div>
+                                <div>
+                                    <div style="font-weight: 500; color: #111827;">${p.nome || '-'}</div>
+                                    <div style="font-size: 0.8rem; color: #6366F1;">${p.email || '-'}</div>
                                 </div>
-                                <span style="font-size: 0.85rem; color: #6B7280; min-width: 60px;">${media30d} peças</span>
                             </div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; background: ${tierStyle.bg}; color: ${tierStyle.color}; text-transform: uppercase;">${tier}</span>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="font-size: 1.25rem; font-weight: 700; color: #111827;">${capacityNum}</span>
+                            <span style="color: #9CA3AF; font-size: 0.8rem;"> p/dia</span>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="font-size: 1rem; font-weight: 600; color: ${barColor};">${utilizacao}%</span>
                         </td>
                         <td style="padding: 16px 24px;">
-                            <span style="display: inline-flex; align-items: center; gap: 6px; color: #16A34A; font-size: 0.85rem; font-weight: 500;">
-                                <span style="width: 8px; height: 8px; background: #16A34A; border-radius: 50%;"></span>
-                                Ativo
-                            </span>
+                            <div>
+                                <div style="height: 8px; background: #E5E7EB; border-radius: 4px; overflow: hidden; width: 150px; margin-bottom: 6px;">
+                                    <div style="width: ${progressWidth}%; height: 100%; background: ${barColor}; border-radius: 4px;"></div>
+                                </div>
+                                <span style="font-size: 0.75rem; color: #6B7280;">Média: ${media30d} peças</span>
+                            </div>
                         </td>
                     </tr>
                 `;
             }).join('');
+        }
+
+        function filtrarTabelaCapacity() {
+            const searchTerm = document.getElementById('capacitySearchInput').value.toLowerCase();
+            const tierFilter = document.getElementById('capacityTierFilter').value;
+
+            const filteredData = capacityTableData.filter(p => {
+                const matchesSearch = !searchTerm ||
+                    (p.nome && p.nome.toLowerCase().includes(searchTerm)) ||
+                    (p.email && p.email.toLowerCase().includes(searchTerm));
+                const matchesTier = !tierFilter || p.tier_admin === tierFilter;
+                return matchesSearch && matchesTier;
+            });
+
+            renderCapacityTableRows(filteredData);
         }
 
         function exportarCapacityCSV() {
