@@ -2507,7 +2507,7 @@
                             </div>
                         </div>
                         <div style="margin-top: 16px;">
-                            <div style="font-size: 0.85rem; color: #6B7280; margin-bottom: 4px;">High Performers (+10)</div>
+                            <div style="font-size: 0.85rem; color: #6B7280; margin-bottom: 4px;">Alta Performance</div>
                             <div style="font-size: 2rem; font-weight: 700; color: #111827;" id="capacityHighPerformers">-</div>
                         </div>
                     </div>
@@ -3652,7 +3652,8 @@
                         if (p.media_nota_30d) {
                             totalMedia30d += parseFloat(p.media_nota_30d);
                             countMedia30d++;
-                            if (parseFloat(p.media_nota_30d) >= 10) {
+                            // Alta Performance = média >= 4.5
+                            if (parseFloat(p.media_nota_30d) >= 4.5) {
                                 highPerformers++;
                             }
                         }
@@ -3699,7 +3700,7 @@
             }
 
             const percHighPerf = ((highPerf / ativos) * 100).toFixed(0);
-            return `Sua capacidade total é de ${Math.round(total)} peças/dia com ${ativos} prestadores ativos. A maioria (${maiorFaixa[1]}) está na faixa de ${faixaLabel[maiorFaixa[0]]} peças/dia. ${percHighPerf}% são High Performers com média ≥10.`;
+            return `Sua capacidade total é de ${Math.round(total)} peças/dia com ${ativos} prestadores ativos. A maioria (${maiorFaixa[1]}) está na faixa de ${faixaLabel[maiorFaixa[0]]} peças/dia. ${percHighPerf}% são Alta Performance (média ≥4.5).`;
         }
 
         function renderCapacityPorArea(data, capacityValues) {
