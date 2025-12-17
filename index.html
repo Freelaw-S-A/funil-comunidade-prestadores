@@ -1733,7 +1733,7 @@
                     </svg>
                     <span>Canais de Entrada</span>
                 </button>
-                <button class="nav-item">
+                <button class="nav-item" data-section="capacity" onclick="navigateTo('capacity')">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -2430,6 +2430,65 @@
                 </div>
             </section>
 
+            <!-- ==================== SEÇÃO CAPACITY ==================== -->
+            <section class="page-section" id="sectionCapacity">
+                <header class="header">
+                    <div class="header-left">
+                        <h1 class="header-title">Capacity</h1>
+                        <span class="header-meta">Produção média diária dos prestadores</span>
+                        <span class="data-source-badge" id="dataSourceBadgeCapacity" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-left: 10px; background: #FEF3C7; color: #92400E;">
+                            <span class="badge-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B;"></span>
+                            Carregando...
+                        </span>
+                    </div>
+                </header>
+
+                <!-- Cards de resumo -->
+                <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 24px;">
+                    <div class="stat-card">
+                        <div class="stat-label">1-2 peças/dia</div>
+                        <div class="stat-value" id="capacity1_2">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">3-5 peças/dia</div>
+                        <div class="stat-value" id="capacity3_5">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">6-10 peças/dia</div>
+                        <div class="stat-value" id="capacity6_10">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">11-15 peças/dia</div>
+                        <div class="stat-value" id="capacity11_15">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">+15 peças/dia</div>
+                        <div class="stat-value" id="capacityMais15">-</div>
+                    </div>
+                </div>
+
+                <!-- Tabela de prestadores por capacity -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Prestadores por Capacity</h2>
+                    </div>
+                    <table class="styled-table" id="capacityTable">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Capacity</th>
+                                <th>Tier</th>
+                                <th>Média 30d</th>
+                            </tr>
+                        </thead>
+                        <tbody id="capacityTableBody">
+                            <tr><td colspan="5" style="text-align: center;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
             <!-- ==================== SEÇÃO PERFORMANCE ==================== -->
             <section class="page-section" id="sectionPerformance">
                 <!-- Header Performance -->
@@ -2606,6 +2665,9 @@
             } else if (section === 'carteirizacao') {
                 targetSection = document.getElementById('sectionCarteirizacao');
                 setTimeout(() => carregarCarteirizacao(), 100);
+            } else if (section === 'capacity') {
+                targetSection = document.getElementById('sectionCapacity');
+                setTimeout(() => carregarCapacity(), 100);
             }
 
             if (targetSection) {
@@ -3444,6 +3506,82 @@
                     }
                 }
             });
+        }
+
+        async function carregarCapacity() {
+            try {
+                // Buscar dados de capacity do Supabase
+                const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/prestadores_gestao_atividade?select=nome,email,capacity,tier_admin,media_nota_30d,ativo_plataforma&ativo_plataforma=eq.true`, {
+                    headers: {
+                        'apikey': SUPABASE_CONFIG.anonKey,
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('%c✅ CAPACITY SUPABASE', 'background: #10B981; color: white; padding: 2px 6px; border-radius: 4px;', `${data.length} prestadores`);
+                    updateDataSourceBadge(true, 'dataSourceBadgeCapacity');
+
+                    // Contar por capacity
+                    const counts = {
+                        '1–2': 0,
+                        '3–5': 0,
+                        '6–10': 0,
+                        '11–15': 0,
+                        'mais-15': 0
+                    };
+
+                    data.forEach(p => {
+                        if (p.capacity && counts.hasOwnProperty(p.capacity)) {
+                            counts[p.capacity]++;
+                        }
+                    });
+
+                    // Atualizar cards
+                    document.getElementById('capacity1_2').textContent = counts['1–2'];
+                    document.getElementById('capacity3_5').textContent = counts['3–5'];
+                    document.getElementById('capacity6_10').textContent = counts['6–10'];
+                    document.getElementById('capacity11_15').textContent = counts['11–15'];
+                    document.getElementById('capacityMais15').textContent = counts['mais-15'];
+
+                    // Preencher tabela
+                    const tbody = document.getElementById('capacityTableBody');
+                    if (data.length > 0) {
+                        const capacityLabels = {
+                            '1–2': '1-2 peças/dia',
+                            '3–5': '3-5 peças/dia',
+                            '6–10': '6-10 peças/dia',
+                            '11–15': '11-15 peças/dia',
+                            'mais-15': '+15 peças/dia'
+                        };
+
+                        tbody.innerHTML = data
+                            .filter(p => p.capacity)
+                            .sort((a, b) => {
+                                const order = ['mais-15', '11–15', '6–10', '3–5', '1–2'];
+                                return order.indexOf(a.capacity) - order.indexOf(b.capacity);
+                            })
+                            .map(p => `
+                                <tr>
+                                    <td>${p.nome || '-'}</td>
+                                    <td>${p.email || '-'}</td>
+                                    <td><span class="tier-badge">${capacityLabels[p.capacity] || p.capacity}</span></td>
+                                    <td>${p.tier_admin || '-'}</td>
+                                    <td>${p.media_nota_30d ? parseFloat(p.media_nota_30d).toFixed(2) : '-'}</td>
+                                </tr>
+                            `).join('');
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nenhum dado encontrado</td></tr>';
+                    }
+                } else {
+                    console.error('[Capacity] Erro ao buscar dados');
+                    updateDataSourceBadge(false, 'dataSourceBadgeCapacity');
+                }
+            } catch (error) {
+                console.error('[Capacity] Erro:', error);
+                updateDataSourceBadge(false, 'dataSourceBadgeCapacity');
+            }
         }
 
         async function carregarCanais() {
