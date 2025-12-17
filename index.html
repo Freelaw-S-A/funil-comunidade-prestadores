@@ -3652,8 +3652,8 @@
                         if (p.media_nota_30d) {
                             totalMedia30d += parseFloat(p.media_nota_30d);
                             countMedia30d++;
-                            // Alta Performance = média >= 4.5
-                            if (parseFloat(p.media_nota_30d) >= 4.5) {
+                            // Alta Performance = pegou serviço nos últimos 30 dias E média >= 4.5
+                            if (p.classificacao === 'Pegou serviço nos últimos 30 dias' && parseFloat(p.media_nota_30d) >= 4.5) {
                                 highPerformers++;
                             }
                         }
