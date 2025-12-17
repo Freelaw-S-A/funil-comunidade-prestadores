@@ -2545,12 +2545,13 @@
                                 <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Prestador</th>
                                 <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Tier</th>
                                 <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Capacity</th>
+                                <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Serviços</th>
                                 <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Utilização</th>
                                 <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Status de Entrega</th>
                             </tr>
                         </thead>
                         <tbody id="capacityTableBody">
-                            <tr><td colspan="5" style="text-align: center; padding: 40px; color: #6B7280;">Carregando...</td></tr>
+                            <tr><td colspan="6" style="text-align: center; padding: 40px; color: #6B7280;">Carregando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -3578,7 +3579,7 @@
         async function carregarCapacity() {
             try {
                 // Buscar dados de capacity do Supabase - tabela prestadores_ativos_inscricoes
-                const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/prestadores_ativos_inscricoes?select=nome_completo,email,producao_media_diaria,tier_admin,media_nota_30d,area_atuacao_principal,classificacao`, {
+                const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/prestadores_ativos_inscricoes?select=nome_completo,email,producao_media_diaria,tier_admin,media_nota_30d,area_atuacao_principal,classificacao,total_servicos_aceitos`, {
                     headers: {
                         'apikey': SUPABASE_CONFIG.anonKey,
                         'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
@@ -3596,7 +3597,8 @@
                         tier_admin: p.tier_admin,
                         media_nota_30d: p.media_nota_30d,
                         area: p.area_atuacao_principal,
-                        classificacao: p.classificacao
+                        classificacao: p.classificacao,
+                        total_servicos: p.total_servicos_aceitos || 0
                     }));
 
                     console.log('%c✅ CAPACITY - prestadores_ativos_inscricoes', 'background: #10B981; color: white; padding: 2px 6px; border-radius: 4px;', `${data.length} prestadores`);
@@ -3707,7 +3709,7 @@
             });
 
             if (sortedData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #6B7280;">Nenhum prestador encontrado</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #6B7280;">Nenhum prestador encontrado</td></tr>';
                 return;
             }
 
@@ -3718,6 +3720,7 @@
                 const tier = p.tier_admin || '-';
                 const tierStyle = tierColors[tier] || { bg: '#6B7280', color: '#FFFFFF' };
                 const media30d = p.media_nota_30d ? parseFloat(p.media_nota_30d).toFixed(1) : 0;
+                const totalServicos = p.total_servicos || 0;
 
                 // Calcular utilização (média real / capacity declarada * 100)
                 const utilizacao = capacityNum > 0 ? Math.min(Math.round((media30d / capacityNum) * 100), 100) : 0;
@@ -3743,6 +3746,9 @@
                         <td style="padding: 16px;">
                             <span style="font-size: 1.25rem; font-weight: 700; color: #111827;">${capacityNum}</span>
                             <span style="color: #9CA3AF; font-size: 0.8rem;"> p/dia</span>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="font-size: 1.25rem; font-weight: 700; color: #6366F1;">${totalServicos}</span>
                         </td>
                         <td style="padding: 16px;">
                             <span style="font-size: 1rem; font-weight: 600; color: ${barColor};">${utilizacao}%</span>
