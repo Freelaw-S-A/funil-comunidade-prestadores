@@ -1778,7 +1778,11 @@
                 <header class="header">
                     <div class="header-left">
                         <h1 class="header-title">Principais Indicadores - Funil de Ativação Prestadores</h1>
-                        <span class="header-meta" id="lastUpdate">Atualizado agora • Supabase</span>
+                        <span class="header-meta" id="lastUpdate">Carregando...</span>
+                        <span class="data-source-badge" id="dataSourceBadge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-left: 10px; background: #FEF3C7; color: #92400E;">
+                            <span class="badge-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B;"></span>
+                            Carregando...
+                        </span>
                     </div>
                 </header>
 
@@ -2719,6 +2723,43 @@
         }
 
         // ==========================================
+        // INDICADOR DE FONTE DE DADOS
+        // ==========================================
+        function updateDataSourceBadge(isSupabase, details = '') {
+            const badge = document.getElementById('dataSourceBadge');
+            if (!badge) return;
+
+            if (isSupabase) {
+                badge.style.background = '#D1FAE5';
+                badge.style.color = '#065F46';
+                badge.innerHTML = `
+                    <span class="badge-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #10B981; animation: pulse 2s infinite;"></span>
+                    Supabase (tempo real)
+                `;
+            } else {
+                badge.style.background = '#FEE2E2';
+                badge.style.color = '#991B1B';
+                badge.innerHTML = `
+                    <span class="badge-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #EF4444;"></span>
+                    FALLBACK (dados estáticos)
+                `;
+            }
+
+            // Adicionar animação de pulse
+            if (!document.getElementById('pulse-animation')) {
+                const style = document.createElement('style');
+                style.id = 'pulse-animation';
+                style.textContent = `
+                    @keyframes pulse {
+                        0%, 100% { opacity: 1; }
+                        50% { opacity: 0.5; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        // ==========================================
         // PROCESS DATA
         // ==========================================
         function processAreaData(rows) {
@@ -2824,7 +2865,7 @@
             const now = new Date();
             const dateStr = now.toLocaleDateString('pt-BR');
             const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('lastUpdate').textContent = `Última atualização: ${dateStr} às ${timeStr} • Dados do Supabase`;
+            document.getElementById('lastUpdate').textContent = `${dateStr} às ${timeStr}`;
 
             // Atualizar Funil Ampulheta
             const funnelInscritos = totais.inscritos;
@@ -2888,6 +2929,7 @@
 
                 if (usarDadosReais) {
                     console.log('%c✅ DADOS SUPABASE (TEMPO REAL)', 'background: #10B981; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;');
+                    updateDataSourceBadge(true);
                     areaData = processAreaData(areaRows);
                     totalInscricoes = funilRows.length;
                     totalAprovados = funilRows.filter(r => r[12] === true).length;
@@ -2902,6 +2944,7 @@
                 } else {
                     console.warn('%c⚠️ FALLBACK ATIVO (dados estáticos)', 'background: #F59E0B; color: black; padding: 4px 8px; border-radius: 4px; font-weight: bold;');
                     console.warn('   Motivo: API Supabase não retornou dados');
+                    updateDataSourceBadge(false);
                     areaData = FALLBACK_DATA;
                     ativosCount = 168;
                     totalInscricoes = 348;
