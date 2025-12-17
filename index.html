@@ -2513,23 +2513,15 @@
                     </div>
                 </div>
 
-                <!-- Charts Row: Distribuição + Insight MarIA -->
-                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; margin-bottom: 24px;">
-                    <!-- Gráfico de Distribuição -->
-                    <div style="background: white; border-radius: 12px; padding: 24px; border: 1px solid #E5E7EB;">
-                        <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0 0 20px 0;">Distribuição de Capacidade (peças/dia)</h3>
-                        <canvas id="chartCapacityDistribuicao" height="200"></canvas>
-                    </div>
-                    <!-- Insight da MarIA -->
-                    <div style="background: linear-gradient(135deg, #1E3A5F 0%, #2D4A6F 100%); border-radius: 12px; padding: 28px; display: flex; flex-direction: column; justify-content: center;">
-                        <h3 style="font-size: 1.25rem; font-weight: 700; color: white; margin: 0 0 16px 0;">Insight da MarIA</h3>
-                        <p id="capacityInsightText" style="color: rgba(255,255,255,0.85); font-size: 0.95rem; line-height: 1.6; margin: 0 0 20px 0;">
-                            "Carregando análise de capacidade..."
-                        </p>
-                        <button onclick="abrirMariaChat()" style="align-self: flex-start; padding: 12px 24px; background: #ECB43D; color: #000; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                            Ver Análise Detalhada
-                        </button>
-                    </div>
+                <!-- Insight da MarIA -->
+                <div style="background: linear-gradient(135deg, #1E3A5F 0%, #2D4A6F 100%); border-radius: 12px; padding: 28px; margin-bottom: 24px;">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: white; margin: 0 0 16px 0;">Insight da MarIA</h3>
+                    <p id="capacityInsightText" style="color: rgba(255,255,255,0.85); font-size: 0.95rem; line-height: 1.6; margin: 0 0 20px 0;">
+                        "Carregando análise de capacidade..."
+                    </p>
+                    <button onclick="abrirMariaChat()" style="align-self: flex-start; padding: 12px 24px; background: #ECB43D; color: #000; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                        Ver Análise Detalhada
+                    </button>
                 </div>
 
                 <!-- Tabela de prestadores por capacity -->
@@ -3583,9 +3575,6 @@
             });
         }
 
-        // Variável global para o gráfico de capacity
-        let chartCapacityDistribuicao = null;
-
         async function carregarCapacity() {
             try {
                 // Buscar dados de capacity do Supabase - tabela prestadores_ativos_inscricoes
@@ -3656,9 +3645,6 @@
                     document.getElementById('capacityAtivosTrend').textContent = '↑ 4%';
                     document.getElementById('capacityMediaTrend').textContent = '~ 0%';
 
-                    // Criar gráfico de distribuição
-                    renderCapacityChart(counts);
-
                     // Gerar insight da MarIA
                     const insightText = gerarInsightCapacity(counts, totalCapacity, prestadoresComCapacity, highPerformers, mediaProducao);
                     document.getElementById('capacityInsightText').textContent = `"${insightText}"`;
@@ -3672,46 +3658,6 @@
             } catch (error) {
                 console.error('[Capacity] Erro:', error);
             }
-        }
-
-        function renderCapacityChart(counts) {
-            const ctx = document.getElementById('chartCapacityDistribuicao');
-            if (!ctx) return;
-
-            // Destruir gráfico anterior se existir
-            if (chartCapacityDistribuicao) {
-                chartCapacityDistribuicao.destroy();
-            }
-
-            chartCapacityDistribuicao = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['1-2', '3-5', '6-10', '11-15', '+15'],
-                    datasets: [{
-                        data: [counts['1–2'], counts['3–5'], counts['6–10'], counts['11–15'], counts['mais-15']],
-                        backgroundColor: ['#6366F1', '#6366F1', '#6366F1', '#6366F1', '#6366F1'],
-                        borderRadius: 6,
-                        barThickness: 40
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#F3F4F6' },
-                            ticks: { stepSize: 1 }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
         }
 
         function gerarInsightCapacity(counts, total, ativos, highPerf, media) {
