@@ -2507,8 +2507,8 @@
                             </div>
                         </div>
                         <div style="margin-top: 16px;">
-                            <div style="font-size: 0.85rem; color: #6B7280; margin-bottom: 4px;">Alta Performance</div>
-                            <div style="font-size: 2rem; font-weight: 700; color: #111827;" id="capacityHighPerformers">-</div>
+                            <div style="font-size: 0.85rem; color: #6B7280; margin-bottom: 4px;">Capacity Alta Performance</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #111827;"><span id="capacityHighPerformers">-</span> <span style="font-size: 0.9rem; font-weight: 500; color: #6B7280;">peças/dia</span></div>
                         </div>
                     </div>
                 </div>
@@ -2542,10 +2542,13 @@
                             <input type="text" id="capacitySearchInput" placeholder="Buscar prestador..." onkeyup="filtrarTabelaCapacity()" style="padding: 8px 14px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 0.875rem; width: 200px; outline: none;">
                             <select id="capacityTierFilter" onchange="filtrarTabelaCapacity()" style="padding: 8px 14px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 0.875rem; background: white; cursor: pointer; outline: none;">
                                 <option value="">Todos Tiers</option>
-                                <option value="Gold">Gold</option>
-                                <option value="Silver">Silver</option>
-                                <option value="Bronze">Bronze</option>
-                                <option value="Platinum">Platinum</option>
+                                <option value="Onboarding">Onboarding</option>
+                                <option value="Tier S">Tier S</option>
+                                <option value="Tier A">Tier A</option>
+                                <option value="Tier B">Tier B</option>
+                                <option value="Tier C">Tier C</option>
+                                <option value="Tier D">Tier D</option>
+                                <option value="Inativo">Inativo</option>
                             </select>
                         </div>
                     </div>
@@ -3642,7 +3645,7 @@
                     let totalCapacity = 0;
                     let totalMedia30d = 0;
                     let countMedia30d = 0;
-                    let highPerformers = 0;
+                    let highPerformersCapacity = 0; // Capacidade total dos Alta Performance
 
                     data.forEach(p => {
                         if (p.capacity && counts.hasOwnProperty(p.capacity)) {
@@ -3653,8 +3656,9 @@
                             totalMedia30d += parseFloat(p.media_nota_30d);
                             countMedia30d++;
                             // Alta Performance = pegou serviço nos últimos 30 dias E média >= 4.5
+                            // Soma a capacidade do prestador alta performance
                             if (p.classificacao === 'Pegou serviço nos últimos 30 dias' && parseFloat(p.media_nota_30d) >= 4.5) {
-                                highPerformers++;
+                                highPerformersCapacity += capacityValues[p.capacity] || 0;
                             }
                         }
                     });
@@ -3666,7 +3670,7 @@
                     document.getElementById('capacityTotal').textContent = Math.round(totalCapacity);
                     document.getElementById('capacityPrestadoresAtivos').textContent = prestadoresComCapacity;
                     document.getElementById('capacityMediaProducao').textContent = mediaProducao;
-                    document.getElementById('capacityHighPerformers').textContent = highPerformers;
+                    document.getElementById('capacityHighPerformers').textContent = Math.round(highPerformersCapacity);
 
                     // Placeholder trends (você pode calcular com dados históricos)
                     document.getElementById('capacityTotalTrend').textContent = '↑ 12%';
@@ -3674,7 +3678,7 @@
                     document.getElementById('capacityMediaTrend').textContent = '~ 0%';
 
                     // Gerar insight da MarIA
-                    const insightText = gerarInsightCapacity(counts, totalCapacity, prestadoresComCapacity, highPerformers, mediaProducao);
+                    const insightText = gerarInsightCapacity(counts, totalCapacity, prestadoresComCapacity, highPerformersCapacity, mediaProducao);
                     document.getElementById('capacityInsightText').textContent = `"${insightText}"`;
 
                     // Renderizar Capacity por Área
