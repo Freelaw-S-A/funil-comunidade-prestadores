@@ -2611,48 +2611,36 @@
         }
 
         // ==========================================
-        // CONFIGURAÇÃO METABASE
+        // CONFIGURAÇÃO SUPABASE (substitui Metabase)
         // ==========================================
-        const METABASE_CONFIG = {
-            baseUrl: 'https://metrics.freelaw.work',
-            // UUIDs públicos para API sem autenticação (funciona via file://)
-            publicUUIDs: {
-                area: 'd5cf4a79-5de3-4481-8b6e-5d2f2add6e0b',        // 3474
-                ativos: '1b070d81-e824-43e3-ad1a-4882d46a4dea',      // 3622
-                tiers: 'de6c2567-00dc-4686-9cea-3e22394f56b9',       // 3697
-                funilMaster: '608e08fd-bfc2-45b5-ba64-1c678dc1c21e'  // 3821
-            },
-            // IDs para referência (não usados diretamente)
-            queryAreaId: 3474,
-            queryFunilMasterId: 3821,
-            queryAtivosId: 3622
+        const SUPABASE_CONFIG = {
+            url: 'https://cgcpnivigebpqkzuzjpk.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnY3BuaXZpZ2VicHFrenV6anBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1NjM3NDIsImV4cCI6MjA3NjEzOTc0Mn0.eu_TQqLSlfqoLv0FroFFhIy7dYr7gY7Tf3047FKZZw4'
         };
 
-        // ==========================================
-        // FETCH DATA (API Pública - funciona via file://)
-        // ==========================================
+        // Mapeamento de queryId para função RPC do Supabase
+        const QUERY_TO_RPC = {
+            3474: 'get_funil_por_area',
+            3622: 'get_prestadores_ativos',
+            3697: 'get_distribuicao_tiers',
+            3821: 'get_funil_master'
+        };
 
-        // Ordem fixa dos campos por query (garante consistência)
-        const QUERY_FIELD_ORDER = {
-            // Query 3622 - Prestadores Ativos
-            '1b070d81-e824-43e3-ad1a-4882d46a4dea': [
-                'email', 'nome_completo', 'OAB', 'WhatsApp', 'Área', 'Experiência',
-                'Nota Prova', 'Acertos Onboarding', 'Média 30d', 'Classificação', 'Tier',
-                'Aprovação Prova', 'Aprovação Onboarding', 'Última Sync', '_nocache'
+        // Mapeamento de campos RPC para formato esperado pelo dashboard (array de arrays)
+        const RPC_FIELD_ORDER = {
+            'get_funil_por_area': [
+                'area_atuacao', 'total_inscritos', 'aprovados_prova', 'perc_prova',
+                'aprovados_onboarding', 'perc_onboard', 'aprovados_total', 'perc_aprovados',
+                'ativados', 'taxa_conversao', 'pendentes_admin', 'bloqueados',
+                'desativados_inat', 'saida_vol', 'desistentes'
             ],
-            // Query 3474 - Funil por Área
-            'd5cf4a79-5de3-4481-8b6e-5d2f2add6e0b': [
-                'Área de Atuação', 'Inscritos', 'Aprovados Prova', '% Prova',
-                'Aprovados Onboarding', '% Onboard', 'Aprovados Total', '% Aprovados',
-                'Ativados', 'Taxa Conversão', 'Pendentes Admin', 'Bloqueados',
-                'Desativ. Inat.', 'Saída Vol.', 'Desistentes', '_nocache'
+            'get_prestadores_ativos': [
+                'email', 'nome_completo', 'oab', 'whatsapp', 'area', 'experiencia',
+                'nota_prova', 'acertos_onboarding', 'media_30d', 'classificacao', 'tier',
+                'aprovacao_prova', 'aprovacao_onboarding'
             ],
-            // Query 3697 - Distribuição por Tier
-            'de6c2567-00dc-4686-9cea-3e22394f56b9': [
-                'Tier', 'Quantidade', 'Percentual'
-            ],
-            // Query 3821 - Funil Master Consolidado
-            '608e08fd-bfc2-45b5-ba64-1c678dc1c21e': [
+            'get_distribuicao_tiers': ['tier', 'quantidade', 'percentual'],
+            'get_funil_master': [
                 'email', 'oab_numero_uf', 'nome_completo', 'telefone_whatsapp',
                 'area_atuacao_principal', 'nota_prova_tecnica', 'prova_finalizada_em',
                 'prestador_verificado', 'interesse_alto_volume', 'data_inscricao',
@@ -2661,72 +2649,73 @@
                 'is_saida_voluntaria', 'status_funil', 'acertos_onboarding',
                 'data_aprovacao_onboarding', 'data_verificacao', 'motivo_desativacao',
                 'data_desativacao', 'motivo_bloqueio', 'data_bloqueio',
-                'motivo_saida', 'data_saida', '_nocache'
+                'motivo_saida', 'data_saida'
             ]
         };
 
-        async function fetchPublicData(uuid) {
-            // Usar proxy CORS para evitar bloqueio (mesmo approach do calendario-prestador)
-            const corsProxy = 'https://corsproxy.io/?';
-            const cacheBuster = `_t=${Date.now()}`;
-            const metabaseUrl = `${METABASE_CONFIG.baseUrl}/api/public/card/${uuid}/query/json?${cacheBuster}`;
-            const url = corsProxy + encodeURIComponent(metabaseUrl);
+        // Manter compatibilidade com código antigo
+        const METABASE_CONFIG = {
+            baseUrl: 'https://metrics.freelaw.work',
+            queryAreaId: 3474,
+            queryFunilMasterId: 3821,
+            queryAtivosId: 3622
+        };
+
+        // ==========================================
+        // FETCH DATA (API Supabase - sem CORS!)
+        // ==========================================
+
+        async function fetchSupabaseRPC(functionName) {
+            const url = `${SUPABASE_CONFIG.url}/rest/v1/rpc/${functionName}`;
             try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                console.log(`[Supabase] Chamando RPC: ${functionName}`);
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_CONFIG.anonKey,
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+                    },
+                    body: '{}'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
-                // API pública retorna array de objetos, converter para array de arrays
+                console.log(`[Supabase] ${functionName}: ${data.length} registros`);
+
+                // Converter de objeto para array de arrays (formato esperado pelo dashboard)
                 if (data && data.length > 0) {
-                    // Usar ordem fixa se definida, senão usar ordem das chaves
-                    const fieldOrder = QUERY_FIELD_ORDER[uuid];
-                    const keys = fieldOrder || Object.keys(data[0]);
-                    console.log(`[fetchPublicData] UUID ${uuid.substring(0,8)}... - Campos: ${keys.slice(0,5).join(', ')}...`);
+                    const fieldOrder = RPC_FIELD_ORDER[functionName];
+                    if (fieldOrder) {
+                        return data.map(row => fieldOrder.map(key => row[key]));
+                    }
+                    // Fallback: usar ordem das chaves do objeto
+                    const keys = Object.keys(data[0]);
                     return data.map(row => keys.map(k => row[k]));
                 }
                 return [];
             } catch (error) {
-                console.error(`Erro ao buscar dados públicos (${uuid}):`, error);
+                console.error(`[Supabase] Erro ao chamar ${functionName}:`, error);
                 return null;
             }
-        }
-
-        // Mapeamento de queryId para UUID público
-        function getPublicUUID(queryId) {
-            const map = {
-                3474: METABASE_CONFIG.publicUUIDs.area,
-                3622: METABASE_CONFIG.publicUUIDs.ativos,
-                3697: METABASE_CONFIG.publicUUIDs.tiers,
-                3821: METABASE_CONFIG.publicUUIDs.funilMaster
-            };
-            return map[queryId] || null;
         }
 
         async function fetchMetabaseData(questionId) {
-            // Tentar API pública primeiro (funciona via file://)
-            const uuid = getPublicUUID(questionId);
-            if (uuid) {
-                const publicData = await fetchPublicData(uuid);
-                if (publicData && publicData.length > 0) {
-                    console.log(`[Query ${questionId}] Carregado via API pública: ${publicData.length} registros`);
-                    return publicData;
+            // Usar Supabase RPC (substitui Metabase)
+            const rpcFunction = QUERY_TO_RPC[questionId];
+            if (rpcFunction) {
+                const data = await fetchSupabaseRPC(rpcFunction);
+                if (data && data.length > 0) {
+                    console.log(`[Query ${questionId}] Carregado via Supabase RPC: ${data.length} registros`);
+                    return data;
                 }
             }
 
-            // Fallback para API autenticada (requer login e localhost)
-            const url = `${METABASE_CONFIG.baseUrl}/api/card/${questionId}/query`;
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
-                });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-                return data.data.rows;
-            } catch (error) {
-                console.error(`Erro ao buscar dados da query ${questionId}:`, error);
-                return null;
-            }
+            console.warn(`[Query ${questionId}] Nenhum dado retornado do Supabase`);
+            return null;
         }
 
         // ==========================================
