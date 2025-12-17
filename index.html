@@ -2818,7 +2818,7 @@
             if (bloqueadosCard) bloqueadosCard.textContent = totais.bloqueados.toLocaleString('pt-BR');
 
             const churnTotalCard = document.getElementById('churnTotalCard');
-            if (churnTotalCard) churnTotalCard.textContent = (totais.desativados + totais.saidaVol + totais.desistentes).toLocaleString('pt-BR');
+            if (churnTotalCard) churnTotalCard.textContent = (totais.bloqueados + totais.desativados + totais.saidaVol + totais.desistentes).toLocaleString('pt-BR');
 
             // Update timestamp
             const now = new Date();
