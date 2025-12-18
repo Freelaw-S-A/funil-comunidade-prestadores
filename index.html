@@ -1780,333 +1780,276 @@
         <main class="main-content">
             <!-- ==================== SEÇÃO FUNIL ==================== -->
             <section class="page-section active" id="sectionFunil">
-                <!-- Header Minimalista -->
-                <header class="header">
-                    <div class="header-left">
-                        <h1 class="header-title">Principais Indicadores - Funil de Ativação Prestadores</h1>
-                        <span class="header-meta" id="lastUpdate">Carregando...</span>
-                        <span class="data-source-badge" id="dataSourceBadge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-left: 10px; background: #FEF3C7; color: #92400E;">
+                <!-- Header com métricas resumidas -->
+                <header style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
+                    <div>
+                        <h1 style="font-size: 1.75rem; font-weight: 700; color: #1F1F3D; margin: 0 0 4px 0;">Análise Estratégica de Ativação</h1>
+                        <p style="font-size: 0.8rem; color: #6B7280; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">Visão macro de conversão e saúde dos tiers</p>
+                        <span class="data-source-badge" id="dataSourceBadge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-top: 8px; background: #FEF3C7; color: #92400E;">
                             <span class="badge-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B;"></span>
                             Carregando...
                         </span>
                     </div>
+                    <div style="display: flex; gap: 24px; text-align: right;">
+                        <div>
+                            <div style="font-size: 0.7rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Input Total</div>
+                            <div id="headerInputTotal" style="font-size: 1.5rem; font-weight: 700; color: #1F1F3D;">...</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.7rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Ativação Final</div>
+                            <div id="headerAtivacaoFinal" style="font-size: 1.5rem; font-weight: 700; color: #7C3AED;">...</div>
+                        </div>
+                    </div>
                 </header>
 
-                <!-- DASHBOARD CARDS: Layout estilo Apple -->
-                <div class="dashboard-cards-grid">
-                    <!-- Card 1: Total Inscritos -->
-                    <div class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon purple">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                                </svg>
+                <!-- Container principal: Funil + Detalhamento lado a lado -->
+                <div style="display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 32px;">
+
+                    <!-- FUNIL DE ATIVAÇÃO (Esquerda) -->
+                    <div style="flex: 1; min-width: 400px; max-width: 500px;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 0;">
+
+                            <!-- TOPO DO FUNIL: Inscritos -->
+                            <div style="width: 100%; background: linear-gradient(135deg, #4C1D95 0%, #5B21B6 100%); padding: 20px 24px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                        <svg fill="none" stroke="white" viewBox="0 0 24 24" width="20" height="20">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.65rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.5px;">Topo do Funil</div>
+                                        <div style="font-size: 1rem; font-weight: 600; color: white;">Inscritos</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div id="funnelInscritos" style="font-size: 2rem; font-weight: 700; color: white;">...</div>
+                                    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.7);">100% VOLUME</div>
+                                </div>
                             </div>
-                            <span class="dashboard-card-badge" id="badgeAprovadosCard">56.7%</span>
+
+                            <!-- Seta de conversão -->
+                            <div style="padding: 8px 0; display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 2px; height: 20px; background: #E5E7EB;"></div>
+                                <span style="font-size: 0.7rem; color: #6B7280; background: #F3F4F6; padding: 2px 8px; border-radius: 10px;">CONVERSÃO: <span id="funnelConversaoPerc">61.7%</span></span>
+                            </div>
+
+                            <!-- MEIO DO FUNIL: Aprovados -->
+                            <div style="width: 88%; background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%); padding: 18px 22px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 36px; height: 36px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                        <svg fill="none" stroke="white" viewBox="0 0 24 24" width="18" height="18">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.65rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.5px;">Meio do Funil</div>
+                                        <div style="font-size: 0.95rem; font-weight: 600; color: white;">Aprovados Prova</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div id="funnelAprovados" style="font-size: 1.75rem; font-weight: 700; color: white;">...</div>
+                                    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.7);"><span id="funnelAprovadosPerc">61.7%</span> RETENÇÃO</div>
+                                </div>
+                            </div>
+
+                            <!-- Seta de ativação -->
+                            <div style="padding: 8px 0; display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 2px; height: 20px; background: #E5E7EB;"></div>
+                                <span style="font-size: 0.7rem; color: #6B7280; background: #F3F4F6; padding: 2px 8px; border-radius: 10px;">ATIVAÇÃO: <span id="funnelAtivacaoPerc2">35.7%</span></span>
+                            </div>
+
+                            <!-- FUNDO DO FUNIL: Ativos -->
+                            <div style="width: 76%; background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%); padding: 18px 22px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 36px; height: 36px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                        <svg fill="none" stroke="white" viewBox="0 0 24 24" width="18" height="18">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.65rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.5px;">Fundo do Funil</div>
+                                        <div style="font-size: 0.95rem; font-weight: 600; color: white;">Ativos Agora</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div id="funnelAtivados" style="font-size: 1.75rem; font-weight: 700; color: white;">...</div>
+                                    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.7);"><span id="funnelAtivadosPerc">35.7%</span> EFICIÊNCIA</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="dashboard-card-label">Total Inscritos</div>
-                        <div class="dashboard-card-value" id="totalInscritosCard">...</div>
                     </div>
 
-                    <!-- Card 2: Aprovados -->
-                    <div class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon pink">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
+                    <!-- DETALHAMENTO POR TIER (Direita) -->
+                    <div style="flex: 1; min-width: 380px; max-width: 500px; background: #FAFAFA; border-radius: 16px; padding: 24px; border: 1px solid #E5E7EB;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 8px; height: 8px; background: #7C3AED; border-radius: 50%;"></div>
+                                <span style="font-size: 0.85rem; font-weight: 600; color: #1F1F3D; text-transform: uppercase; letter-spacing: 0.5px;">Detalhamento por Tier</span>
                             </div>
+                            <span style="font-size: 0.65rem; color: #9CA3AF; background: #F3F4F6; padding: 4px 10px; border-radius: 12px;">QUERY ID: 3697</span>
                         </div>
-                        <div class="dashboard-card-label">Aprovados</div>
-                        <div class="dashboard-card-value" id="totalAprovadosCard">...</div>
-                    </div>
 
-                    <!-- Card 3: Taxa de Ativacao -->
-                    <div class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon yellow">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                                </svg>
+                        <!-- Grid de Tiers S-D -->
+                        <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                            <div style="flex: 1; background: #4C1D95; border-radius: 10px; padding: 14px 8px; text-align: center;">
+                                <div style="font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.8); text-transform: uppercase; margin-bottom: 4px;">Tier S</div>
+                                <div id="tierSCount" style="font-size: 1.25rem; font-weight: 700; color: white;">6</div>
+                                <div style="width: 20px; height: 2px; background: rgba(255,255,255,0.3); margin: 6px auto 0;"></div>
                             </div>
-                            <span class="dashboard-card-badge success" id="badgeAtivadosCard">166 ativados</span>
+                            <div style="flex: 1; background: #6D28D9; border-radius: 10px; padding: 14px 8px; text-align: center;">
+                                <div style="font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.8); text-transform: uppercase; margin-bottom: 4px;">Tier A</div>
+                                <div id="tierACount" style="font-size: 1.25rem; font-weight: 700; color: white;">4</div>
+                                <div style="width: 20px; height: 2px; background: rgba(255,255,255,0.3); margin: 6px auto 0;"></div>
+                            </div>
+                            <div style="flex: 1; background: #7C3AED; border-radius: 10px; padding: 14px 8px; text-align: center;">
+                                <div style="font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.8); text-transform: uppercase; margin-bottom: 4px;">Tier B</div>
+                                <div id="tierBCount" style="font-size: 1.25rem; font-weight: 700; color: white;">4</div>
+                                <div style="width: 20px; height: 2px; background: rgba(255,255,255,0.3); margin: 6px auto 0;"></div>
+                            </div>
+                            <div style="flex: 1; background: #8B5CF6; border-radius: 10px; padding: 14px 8px; text-align: center;">
+                                <div style="font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.8); text-transform: uppercase; margin-bottom: 4px;">Tier C</div>
+                                <div id="tierCCount" style="font-size: 1.25rem; font-weight: 700; color: white;">2</div>
+                                <div style="width: 20px; height: 2px; background: rgba(255,255,255,0.3); margin: 6px auto 0;"></div>
+                            </div>
+                            <div style="flex: 1; background: #A78BFA; border-radius: 10px; padding: 14px 8px; text-align: center;">
+                                <div style="font-size: 0.65rem; font-weight: 700; color: white; text-transform: uppercase; margin-bottom: 4px;">Tier D</div>
+                                <div id="tierDCount" style="font-size: 1.25rem; font-weight: 700; color: white;">8</div>
+                                <div style="width: 20px; height: 2px; background: rgba(255,255,255,0.3); margin: 6px auto 0;"></div>
+                            </div>
                         </div>
-                        <div class="dashboard-card-label">Taxa de Ativacao</div>
-                        <div class="dashboard-card-value" id="taxaAtivacaoCard">48.3%</div>
-                    </div>
 
-                    <!-- Card 4: Ativos Agora -->
-                    <div class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-icon green">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                                </svg>
+                        <!-- Onboarding e Inativos -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div>
+                                <div style="font-size: 0.7rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Em Processo</div>
+                                <div style="display: flex; align-items: baseline; gap: 6px;">
+                                    <span style="font-size: 0.9rem; font-weight: 600; color: #1F1F3D;">Onboarding</span>
+                                    <span id="tierOnboardingCount" style="font-size: 1.25rem; font-weight: 700; color: #7C3AED;">93</span>
+                                </div>
                             </div>
-                            <span class="dashboard-card-badge">Tier S-D</span>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.7rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Inativos</div>
+                                <span id="tierInativoCount" style="font-size: 1.25rem; font-weight: 700; color: #F59E0B;">8</span>
+                            </div>
                         </div>
-                        <div class="dashboard-card-label">Ativos Agora</div>
-                        <div class="dashboard-card-value" id="ativosAgoraCard">...</div>
+
+                        <!-- Barra de progresso -->
+                        <div style="background: #E5E7EB; border-radius: 6px; height: 24px; overflow: hidden; display: flex; margin-bottom: 12px;">
+                            <div id="barTierS" style="background: #4C1D95; height: 100%; width: 4.8%;" title="Tier S"></div>
+                            <div id="barTierA" style="background: #6D28D9; height: 100%; width: 3.2%;" title="Tier A"></div>
+                            <div id="barTierB" style="background: #7C3AED; height: 100%; width: 3.2%;" title="Tier B"></div>
+                            <div id="barTierC" style="background: #8B5CF6; height: 100%; width: 1.6%;" title="Tier C"></div>
+                            <div id="barTierD" style="background: #A78BFA; height: 100%; width: 6.4%;" title="Tier D"></div>
+                            <div id="barOnboarding" style="background: #C4B5FD; height: 100%; width: 74.4%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 600; color: #4C1D95;" title="Onboarding">ATIVAÇÃO PROGRESSIVA</div>
+                            <div id="barInativo" style="background: #FEF3C7; height: 100%; width: 6.4%;" title="Inativo"></div>
+                        </div>
+
+                        <!-- Legenda -->
+                        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #6B7280;">
+                            <span>PERDA TÉCNICA</span>
+                            <span style="color: #7C3AED; font-weight: 600;">POTENCIAL DE CONVERSÃO: <span id="potencialConversao">74%</span></span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- MINI CARDS ROW -->
-                <div class="mini-cards-row">
-                    <!-- Pendentes Admin -->
-                    <div class="mini-card">
-                        <div class="mini-card-info">
-                            <span class="mini-card-label">Pendentes Admin</span>
-                            <span class="mini-card-value" id="pendentesAdminCard">...</span>
+                <!-- MÉTRICAS DE SUPORTE -->
+                <div style="margin-bottom: 24px;">
+                    <div style="font-size: 0.75rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px;">Métricas de Suporte</div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+                        <!-- Total Inscritos -->
+                        <div style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #E5E7EB;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                <div style="width: 40px; height: 40px; background: #F3E8FF; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                    <svg fill="none" stroke="#7C3AED" viewBox="0 0 24 24" width="20" height="20">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                    </svg>
+                                </div>
+                                <span id="badgeAprovadosCard" style="font-size: 0.7rem; font-weight: 600; color: #6B7280; background: #F3F4F6; padding: 4px 8px; border-radius: 10px;">61.7%</span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Total Inscritos</div>
+                            <div id="totalInscritosCard" style="font-size: 1.75rem; font-weight: 700; color: #1F1F3D;">...</div>
                         </div>
-                        <div class="mini-card-icon">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                        <!-- Aprovados -->
+                        <div style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #E5E7EB;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                <div style="width: 40px; height: 40px; background: #FCE7F3; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                    <svg fill="none" stroke="#DB2777" viewBox="0 0 24 24" width="20" height="20">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.75rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Aprovados</div>
+                            <div id="totalAprovadosCard" style="font-size: 1.75rem; font-weight: 700; color: #1F1F3D;">...</div>
+                        </div>
+
+                        <!-- Taxa de Ativação -->
+                        <div style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #E5E7EB;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                <div style="width: 40px; height: 40px; background: #FEF3C7; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                    <svg fill="none" stroke="#D97706" viewBox="0 0 24 24" width="20" height="20">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                    </svg>
+                                </div>
+                                <span id="badgeAtivadosCard" style="font-size: 0.7rem; font-weight: 600; color: #16A34A; background: #DCFCE7; padding: 4px 8px; border-radius: 10px;">125 ativados</span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Taxa de Ativação</div>
+                            <div id="taxaAtivacaoCard" style="font-size: 1.75rem; font-weight: 700; color: #1F1F3D;">...</div>
+                        </div>
+
+                        <!-- Ativos Agora -->
+                        <div style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #E5E7EB;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                <div style="width: 40px; height: 40px; background: #DCFCE7; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                    <svg fill="none" stroke="#16A34A" viewBox="0 0 24 24" width="20" height="20">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                    </svg>
+                                </div>
+                                <span style="font-size: 0.7rem; font-weight: 600; color: #6B7280; background: #F3F4F6; padding: 4px 8px; border-radius: 10px;">Tier S-D</span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Ativos Agora</div>
+                            <div id="ativosAgoraCard" style="font-size: 1.75rem; font-weight: 700; color: #1F1F3D;">...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mini cards: Pendentes, Bloqueados, Churn -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                    <div style="background: white; border-radius: 12px; padding: 16px 20px; border: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.7rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Pendentes Admin</div>
+                            <div id="pendentesAdminCard" style="font-size: 1.5rem; font-weight: 700; color: #1F1F3D;">...</div>
+                        </div>
+                        <div style="width: 36px; height: 36px; background: #F3F4F6; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg fill="none" stroke="#6B7280" viewBox="0 0 24 24" width="18" height="18">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                         </div>
                     </div>
-
-                    <!-- Bloqueados -->
-                    <div class="mini-card">
-                        <div class="mini-card-info">
-                            <span class="mini-card-label">Bloqueados</span>
-                            <span class="mini-card-value warning" id="bloqueadosCard">...</span>
+                    <div style="background: white; border-radius: 12px; padding: 16px 20px; border: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.7rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Bloqueados</div>
+                            <div id="bloqueadosCard" style="font-size: 1.5rem; font-weight: 700; color: #DC2626;">...</div>
                         </div>
-                        <div class="mini-card-icon warning">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div style="width: 36px; height: 36px; background: #FEF2F2; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg fill="none" stroke="#DC2626" viewBox="0 0 24 24" width="18" height="18">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                             </svg>
                         </div>
                     </div>
-
-                    <!-- Churn Total -->
-                    <div class="mini-card">
-                        <div class="mini-card-info">
-                            <span class="mini-card-label">Churn Total</span>
-                            <span class="mini-card-value" id="churnTotalCard">...</span>
+                    <div style="background: white; border-radius: 12px; padding: 16px 20px; border: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.7rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Churn Total</div>
+                            <div id="churnTotalCard" style="font-size: 1.5rem; font-weight: 700; color: #1F1F3D;">...</div>
                         </div>
-                        <div class="mini-card-icon">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div style="width: 36px; height: 36px; background: #F3F4F6; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg fill="none" stroke="#6B7280" viewBox="0 0 24 24" width="18" height="18">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                             </svg>
                         </div>
                     </div>
-
                 </div>
-
-                <!-- HERO: O número que importa -->
-                <div class="hero-metric">
-                    <div class="hero-content">
-                        <div class="hero-label">Prestadores Ativos</div>
-                        <div class="hero-value" id="ativosAgora">...</div>
-                        <div class="hero-subtitle">Prontos para atender demandas</div>
-                    </div>
-                    <div class="hero-side">
-                        <span class="hero-badge">Tier S → D</span>
-                        <div class="hero-trend up">
-                            <span>↑</span>
-                            <span>+12 este mês</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FUNIL: A jornada visual -->
-                <div class="funnel-metrics">
-                    <div class="funnel-step">
-                        <div class="funnel-value" id="totalInscritos">...</div>
-                        <div class="funnel-label">Inscritos</div>
-                        <span class="funnel-rate">100%</span>
-                    </div>
-
-                    <div class="funnel-arrow">
-                        <span>→</span>
-                        <span class="funnel-arrow-rate" id="badgeAprovados">56.5%</span>
-                    </div>
-
-                    <div class="funnel-step">
-                        <div class="funnel-value" id="totalAprovados">...</div>
-                        <div class="funnel-label">Aprovados</div>
-                        <span class="funnel-rate">Prova ≥7</span>
-                    </div>
-
-                    <div class="funnel-arrow">
-                        <span>→</span>
-                        <span class="funnel-arrow-rate" id="taxaAtivacao">64.1%</span>
-                    </div>
-
-                    <div class="funnel-step">
-                        <div class="funnel-value" id="badgeAtivados">...</div>
-                        <div class="funnel-label">Ativos</div>
-                        <span class="funnel-rate">1+ serviço</span>
-                    </div>
-
-                    <div class="funnel-arrow">
-                        <span>→</span>
-                        <span class="funnel-arrow-rate">5.6%</span>
-                    </div>
-
-                    <div class="funnel-step inactive">
-                        <div class="funnel-value inactive">7</div>
-                        <div class="funnel-label">Inativos</div>
-                        <span class="funnel-rate inactive">Sem atividade</span>
-                    </div>
-                </div>
-
-                <!-- ACTION CARDS: O que precisa de atenção -->
-                <div class="action-cards">
-                    <div class="action-card warning">
-                        <div class="action-icon warning">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div class="action-content">
-                            <div class="action-value" id="pendentesAdmin">...</div>
-                            <div class="action-label">Aguardando aprovação</div>
-                        </div>
-                        <span class="action-arrow">›</span>
-                    </div>
-
-                    <div class="action-card info">
-                        <div class="action-icon info">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                            </svg>
-                        </div>
-                        <div class="action-content">
-                            <div class="action-value">93</div>
-                            <div class="action-label">Em onboarding</div>
-                        </div>
-                        <span class="action-arrow">›</span>
-                    </div>
-
-                    <div class="action-card success">
-                        <div class="action-icon success">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div class="action-content">
-                            <div class="action-value">25</div>
-                            <div class="action-label">Tier S-D ativos</div>
-                        </div>
-                        <span class="action-arrow">›</span>
-                    </div>
-                </div>
-
-                <!-- Legacy cards hidden -->
-                <div class="cards-grid" style="display:none;"></div>
-                <div class="mini-cards-grid" style="display:none;"></div>
-
-            <!-- Container lado a lado: Funil de Ativação + Detalhamento por Tier -->
-            <div style="margin-top: 32px; display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; justify-content: center;">
-
-                <!-- Funil de Ativação -->
-                <div style="flex: 1; min-width: 320px; max-width: 400px;">
-                    <h2 style="font-size: 1.1rem; font-weight: 700; color: #1F1F3D; margin-bottom: 16px; text-align: center;">Funil de Ativação</h2>
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-
-                        <!-- Inscritos -->
-                        <div style="width: 100%; background: #4C1D95; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-radius: 10px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="width: 28px; height: 28px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                    <svg fill="none" stroke="white" viewBox="0 0 24 24" width="14" height="14">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                                    </svg>
-                                </div>
-                                <span style="font-size: 0.85rem; font-weight: 600; color: white;">Inscritos</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span id="funnelInscritos" style="font-size: 1.2rem; font-weight: 700; color: white;">...</span>
-                                <span style="font-size: 0.7rem; color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">100%</span>
-                            </div>
-                        </div>
-
-                        <!-- Aprovados Prova -->
-                        <div style="width: 85%; background: #6D28D9; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-radius: 10px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="width: 26px; height: 26px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                    <svg fill="none" stroke="white" viewBox="0 0 24 24" width="13" height="13">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                </div>
-                                <span style="font-size: 0.8rem; font-weight: 600; color: white;">Aprovados Prova</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span id="funnelAprovados" style="font-size: 1.1rem; font-weight: 700; color: white;">...</span>
-                                <span id="funnelAprovadosPerc" style="font-size: 0.7rem; color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">56.5%</span>
-                            </div>
-                        </div>
-
-                        <!-- Ativos Agora -->
-                        <div style="width: 70%; background: #7C3AED; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-radius: 10px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="width: 26px; height: 26px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                    <svg fill="none" stroke="white" viewBox="0 0 24 24" width="13" height="13">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                    </svg>
-                                </div>
-                                <span style="font-size: 0.85rem; font-weight: 600; color: white;">Ativos Agora</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span id="funnelAtivados" style="font-size: 1.2rem; font-weight: 700; color: white;">...</span>
-                                <span id="funnelAtivadosPerc" style="font-size: 0.7rem; color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">35.7%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Detalhamento por Tier -->
-                <div style="flex: 1; min-width: 320px; max-width: 450px; background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%); border-radius: 10px; padding: 16px;">
-                    <div style="text-align: center; margin-bottom: 12px;">
-                        <span style="font-size: 0.8rem; font-weight: 600; color: #4C1D95;">Detalhamento por Tier</span>
-                        <span style="font-size: 0.65rem; color: #7C3AED; margin-left: 6px;">(Query 3697)</span>
-                    </div>
-
-                    <!-- Grid de Tiers compacto -->
-                    <div style="display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;" id="tierGrid">
-                        <div style="background: #4C1D95; border-radius: 6px; padding: 8px 12px; text-align: center; min-width: 50px;">
-                            <div style="font-size: 0.55rem; font-weight: 700; color: rgba(255,255,255,0.8); text-transform: uppercase;">Tier S</div>
-                            <div id="tierSCount" style="font-size: 1rem; font-weight: 700; color: white;">6</div>
-                        </div>
-                        <div style="background: #6D28D9; border-radius: 6px; padding: 8px 12px; text-align: center; min-width: 50px;">
-                            <div style="font-size: 0.55rem; font-weight: 700; color: rgba(255,255,255,0.8); text-transform: uppercase;">Tier A</div>
-                            <div id="tierACount" style="font-size: 1rem; font-weight: 700; color: white;">5</div>
-                        </div>
-                        <div style="background: #7C3AED; border-radius: 6px; padding: 8px 12px; text-align: center; min-width: 50px;">
-                            <div style="font-size: 0.55rem; font-weight: 700; color: rgba(255,255,255,0.8); text-transform: uppercase;">Tier B</div>
-                            <div id="tierBCount" style="font-size: 1rem; font-weight: 700; color: white;">2</div>
-                        </div>
-                        <div style="background: #8B5CF6; border-radius: 6px; padding: 8px 12px; text-align: center; min-width: 50px;">
-                            <div style="font-size: 0.55rem; font-weight: 700; color: rgba(255,255,255,0.8); text-transform: uppercase;">Tier C</div>
-                            <div id="tierCCount" style="font-size: 1rem; font-weight: 700; color: white;">4</div>
-                        </div>
-                        <div style="background: #A78BFA; border-radius: 6px; padding: 8px 12px; text-align: center; min-width: 50px;">
-                            <div style="font-size: 0.55rem; font-weight: 700; color: white; text-transform: uppercase;">Tier D</div>
-                            <div id="tierDCount" style="font-size: 1rem; font-weight: 700; color: white;">8</div>
-                        </div>
-                        <div style="background: #A855F7; border-radius: 6px; padding: 8px 12px; text-align: center; min-width: 50px;">
-                            <div style="font-size: 0.55rem; font-weight: 700; color: rgba(255,255,255,0.8); text-transform: uppercase;">Onboarding</div>
-                            <div id="tierOnboardingCount" style="font-size: 1rem; font-weight: 700; color: white;">93</div>
-                        </div>
-                        <div style="background: #DDD6FE; border-radius: 6px; padding: 8px 12px; text-align: center; min-width: 50px;">
-                            <div style="font-size: 0.55rem; font-weight: 700; color: #4C1D95; text-transform: uppercase;">Inativo</div>
-                            <div id="tierInativoCount" style="font-size: 1rem; font-weight: 700; color: #4C1D95;">8</div>
-                        </div>
-                    </div>
-
-                    <!-- Barra de progresso visual -->
-                    <div style="margin-top: 12px; background: #EDE9FE; border-radius: 5px; height: 20px; overflow: hidden; display: flex;">
-                        <div id="barTierS" style="background: #4C1D95; height: 100%; width: 4.8%; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 700; color: white;" title="Tier S: 6">S</div>
-                        <div id="barTierA" style="background: #6D28D9; height: 100%; width: 4.0%; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 700; color: white;" title="Tier A: 5">A</div>
-                        <div id="barTierB" style="background: #7C3AED; height: 100%; width: 1.6%; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 700; color: white;" title="Tier B: 2"></div>
-                        <div id="barTierC" style="background: #8B5CF6; height: 100%; width: 3.2%; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 700; color: white;" title="Tier C: 4">C</div>
-                        <div id="barTierD" style="background: #A78BFA; height: 100%; width: 6.4%; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 700; color: white;" title="Tier D: 8">D</div>
-                        <div id="barOnboarding" style="background: #A855F7; height: 100%; width: 74.4%; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 700; color: white;" title="Onboarding: 93">Onboarding</div>
-                        <div id="barInativo" style="background: #DDD6FE; height: 100%; width: 5.6%; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 700; color: #4C1D95;" title="Inativo: 8"></div>
-                    </div>
-                </div>
-
-            </div>
             </section>
 
             <!-- ==================== SEÇÃO CARTEIRIZAÇÃO ==================== -->
