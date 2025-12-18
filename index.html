@@ -3017,11 +3017,29 @@
             const funnelAprovados = totais.aprovTotal;
             const funnelAtivados = totais.ativados;
 
-            document.getElementById('funnelInscritos').textContent = funnelInscritos.toLocaleString('pt-BR');
-            document.getElementById('funnelAprovados').textContent = funnelAprovados.toLocaleString('pt-BR');
-            document.getElementById('funnelAprovadosPerc').textContent = ((funnelAprovados / funnelInscritos) * 100).toFixed(1) + '%';
-            document.getElementById('funnelAtivados').textContent = funnelAtivados.toLocaleString('pt-BR');
-            document.getElementById('funnelAtivadosPerc').textContent = ((funnelAtivados / funnelInscritos) * 100).toFixed(1) + '%';
+            const safeSet = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
+            };
+
+            // Header badges
+            safeSet('headerInputTotal', funnelInscritos.toLocaleString('pt-BR'));
+            safeSet('headerAtivacaoFinal', funnelAtivados.toLocaleString('pt-BR'));
+
+            // Funil visual
+            safeSet('funnelInscritos', funnelInscritos.toLocaleString('pt-BR'));
+            safeSet('funnelAprovados', funnelAprovados.toLocaleString('pt-BR'));
+            safeSet('funnelAtivados', funnelAtivados.toLocaleString('pt-BR'));
+
+            // Percentuais do funil
+            const percConversao = ((funnelAprovados / funnelInscritos) * 100).toFixed(1);
+            const percAtivacao = ((funnelAtivados / funnelInscritos) * 100).toFixed(1);
+            const percAtivacaoAprov = ((funnelAtivados / funnelAprovados) * 100).toFixed(1);
+
+            safeSet('funnelConversaoPerc', percConversao + '%');
+            safeSet('funnelAprovadosPerc', percConversao + '%');
+            safeSet('funnelAtivacaoPerc2', percAtivacao + '%');
+            safeSet('funnelAtivadosPerc', percAtivacao + '%');
         }
 
         // ==========================================
@@ -3269,7 +3287,14 @@
                 safeUpdate('tierPercTotal', tierPerc + '%');
             }
 
-            console.log(`   Tiers carregados: Total=${total}, Com Tier S-D=${totalComTier}`);
+            // Potencial de conversão = Onboarding / Total * 100
+            const onboardingCount = tierMap['Onboarding']?.count || 0;
+            if (total > 0) {
+                const potencial = Math.round((onboardingCount / total) * 100);
+                safeUpdate('potencialConversao', potencial + '%');
+            }
+
+            console.log(`   Tiers carregados: Total=${total}, Com Tier S-D=${totalComTier}, Onboarding=${onboardingCount}`);
         }
 
         // ==========================================
