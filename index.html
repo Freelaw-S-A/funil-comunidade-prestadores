@@ -4103,18 +4103,18 @@
 
                 console.log('%c✅ GARGALOS carregados', 'background: #EF4444; color: white; padding: 2px 6px; border-radius: 4px;', gargalos);
 
-                // Calcular totais
-                const totalBloqueados = gargalos.naoFizeramProva.length + gargalos.reprovaramProva.length + gargalos.naoEmitemNF.length;
+                // Calcular totais (apenas: reprovados prova, abandonaram onboarding, não emitem NF)
+                const totalBloqueados = gargalos.reprovaramProva.length + gargalos.aguardandoOnboarding.length + gargalos.naoEmitemNF.length;
 
                 // Contar quantos estão aguardando há mais de 7 dias
-                const todosGargalos = [...gargalos.naoFizeramProva, ...gargalos.reprovaramProva, ...gargalos.naoEmitemNF];
+                const todosGargalos = [...gargalos.reprovaramProva, ...gargalos.aguardandoOnboarding, ...gargalos.naoEmitemNF];
                 const aguardandoMais7Dias = todosGargalos.filter(p => p.diasParado > 7).length;
 
                 // Encontrar maior gargalo
                 const gargalosOrdenados = [
-                    { nome: 'Prova Técnica', qtd: gargalos.naoFizeramProva.length + gargalos.reprovaramProva.length },
-                    { nome: 'Onboarding', qtd: gargalos.aguardandoOnboarding.length },
-                    { nome: 'Nota Fiscal', qtd: gargalos.naoEmitemNF.length }
+                    { nome: 'Reprovados Prova', qtd: gargalos.reprovaramProva.length },
+                    { nome: 'Abandonaram Onboarding', qtd: gargalos.aguardandoOnboarding.length },
+                    { nome: 'Não Emitem NF', qtd: gargalos.naoEmitemNF.length }
                 ].sort((a, b) => b.qtd - a.qtd);
                 const maiorGargalo = gargalosOrdenados[0];
 
@@ -4136,10 +4136,10 @@
                 // Renderizar cards de gargalos
                 renderGargalosCards(gargalos);
 
-                // Montar dados para tabela (todos os bloqueados)
+                // Montar dados para tabela (reprovados, abandonaram onboarding, não emitem NF)
                 gargalosTableData = [
-                    ...gargalos.naoFizeramProva,
                     ...gargalos.reprovaramProva,
+                    ...gargalos.aguardandoOnboarding,
                     ...gargalos.naoEmitemNF
                 ].sort((a, b) => b.diasParado - a.diasParado);
 
@@ -4152,26 +4152,26 @@
         }
 
         function gerarInsightGargalos(gargalos, totalInscritos, maiorGargalo, aguardandoMais7Dias) {
-            const naoFizeram = gargalos.naoFizeramProva.length;
             const reprovaram = gargalos.reprovaramProva.length;
+            const abandonaramOnb = gargalos.aguardandoOnboarding.length;
             const semNF = gargalos.naoEmitemNF.length;
-            const totalBloqueados = naoFizeram + reprovaram + semNF;
+            const totalBloqueados = reprovaram + abandonaramOnb + semNF;
             const percBloqueados = Math.round((totalBloqueados / totalInscritos) * 100);
 
-            let insight = `Identificamos ${totalBloqueados} candidatos bloqueados no funil (${percBloqueados}% do total de ${totalInscritos} inscritos). `;
+            let insight = `Identificamos ${totalBloqueados} candidatos com impedimentos no funil (${percBloqueados}% do total de ${totalInscritos} inscritos). `;
 
             if (aguardandoMais7Dias > 0) {
-                insight += `${aguardandoMais7Dias} estão parados há mais de 7 dias e precisam de ação urgente. `;
+                insight += `${aguardandoMais7Dias} estão parados há mais de 7 dias. `;
             }
 
-            if (maiorGargalo.nome === 'Prova Técnica') {
-                insight += `O maior gargalo é a Prova Técnica: ${naoFizeram} inscritos não fizeram a prova e ${reprovaram} reprovaram. `;
-                insight += `Recomendação: Enviar lembretes automáticos e revisar o conteúdo da prova para melhorar a taxa de aprovação.`;
-            } else if (maiorGargalo.nome === 'Nota Fiscal') {
-                insight += `${semNF} candidatos não conseguem emitir NF, impedindo sua ativação completa. `;
-                insight += `Recomendação: Oferecer parceria com contabilidade ou guia de MEI para esses candidatos.`;
-            } else if (maiorGargalo.nome === 'Onboarding') {
-                insight += `${gargalos.aguardandoOnboarding.length} pessoas passaram na prova mas não completaram o onboarding. `;
+            if (maiorGargalo.nome === 'Reprovados Prova') {
+                insight += `O maior gargalo são os ${reprovaram} reprovados na prova técnica. `;
+                insight += `Recomendação: Revisar o conteúdo da prova ou oferecer material de estudo.`;
+            } else if (maiorGargalo.nome === 'Não Emitem NF') {
+                insight += `${semNF} candidatos não conseguem emitir NF, impedindo sua ativação. `;
+                insight += `Recomendação: Oferecer parceria com contabilidade ou guia de MEI.`;
+            } else if (maiorGargalo.nome === 'Abandonaram Onboarding') {
+                insight += `${abandonaramOnb} pessoas passaram na prova mas abandonaram o onboarding. `;
                 insight += `Recomendação: Simplificar o processo ou enviar lembretes personalizados.`;
             }
 
@@ -4187,31 +4187,30 @@
 
             const cards = [
                 {
-                    titulo: 'Prova Técnica',
+                    titulo: 'Reprovados Prova Técnica',
                     icon: '📝',
                     cor: '#EF4444',
                     bgCor: '#FEE2E2',
                     items: [
-                        { label: 'Não fizeram prova', qtd: gargalos.naoFizeramProva.length, mediaDias: calcMediaDias(gargalos.naoFizeramProva) },
-                        { label: 'Reprovaram (<7)', qtd: gargalos.reprovaramProva.length, mediaDias: calcMediaDias(gargalos.reprovaramProva) }
+                        { label: 'Nota < 7', qtd: gargalos.reprovaramProva.length, mediaDias: calcMediaDias(gargalos.reprovaramProva) }
                     ]
                 },
                 {
-                    titulo: 'Onboarding',
+                    titulo: 'Abandonaram Onboarding',
                     icon: '🎓',
                     cor: '#F59E0B',
                     bgCor: '#FEF3C7',
                     items: [
-                        { label: 'Aguardando onboarding', qtd: gargalos.aguardandoOnboarding.length, mediaDias: calcMediaDias(gargalos.aguardandoOnboarding) }
+                        { label: 'Não completaram', qtd: gargalos.aguardandoOnboarding.length, mediaDias: calcMediaDias(gargalos.aguardandoOnboarding) }
                     ]
                 },
                 {
-                    titulo: 'Nota Fiscal',
+                    titulo: 'Não Emitem NF',
                     icon: '🧾',
                     cor: '#8B5CF6',
                     bgCor: '#F3E8FF',
                     items: [
-                        { label: 'Não emitem NF', qtd: gargalos.naoEmitemNF.length, mediaDias: calcMediaDias(gargalos.naoEmitemNF) }
+                        { label: 'Sem capacidade de emissão', qtd: gargalos.naoEmitemNF.length, mediaDias: calcMediaDias(gargalos.naoEmitemNF) }
                     ]
                 }
             ];
