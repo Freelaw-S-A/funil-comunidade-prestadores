@@ -2985,11 +2985,6 @@
             const funnelAprovados = totais.aprovTotal;
             const funnelAtivados = totais.ativados;
 
-            const safeSet = (id, value) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = value;
-            };
-
             // Header badges
             safeSet('headerInputTotal', funnelInscritos.toLocaleString('pt-BR'));
             safeSet('headerAtivacaoFinal', funnelAtivados.toLocaleString('pt-BR'));
