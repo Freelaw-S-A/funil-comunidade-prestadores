@@ -2639,73 +2639,6 @@
                     </button>
                 </header>
 
-                <!-- KPI Cards Resumo -->
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px;">
-                    <!-- Total Bloqueados -->
-                    <div class="kpi-card">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #FEE2E2, #FECACA); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                <svg fill="none" stroke="#DC2626" viewBox="0 0 24 24" width="20" height="20">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                </svg>
-                            </div>
-                            <span id="gargalosTotalTrend" style="font-size: 0.8rem; font-weight: 600; color: #DC2626; background: #FEE2E2; padding: 2px 8px; border-radius: 12px;">-</span>
-                        </div>
-                        <p style="color: #6B7280; font-size: 0.875rem; margin: 12px 0 4px 0;">Total Bloqueados</p>
-                        <div style="display: flex; align-items: baseline; gap: 4px;">
-                            <span id="gargalosTotalBloqueados" style="font-size: 2rem; font-weight: 700; color: #111827;">-</span>
-                            <span style="font-size: 0.9rem; font-weight: 500; color: #6B7280;">pessoas</span>
-                        </div>
-                    </div>
-
-                    <!-- Aguardando Ação -->
-                    <div class="kpi-card">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                <svg fill="none" stroke="#D97706" viewBox="0 0 24 24" width="20" height="20">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </div>
-                            <span style="font-size: 0.8rem; font-weight: 600; color: #D97706; background: #FEF3C7; padding: 2px 8px; border-radius: 12px;">Urgente</span>
-                        </div>
-                        <p style="color: #6B7280; font-size: 0.875rem; margin: 12px 0 4px 0;">Aguardando Ação</p>
-                        <div style="display: flex; align-items: baseline; gap: 4px;">
-                            <span id="gargalosAguardandoAcao" style="font-size: 2rem; font-weight: 700; color: #111827;">-</span>
-                            <span style="font-size: 0.9rem; font-weight: 500; color: #6B7280;">há +7 dias</span>
-                        </div>
-                    </div>
-
-                    <!-- Maior Gargalo -->
-                    <div class="kpi-card">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #DBEAFE, #BFDBFE); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                <svg fill="none" stroke="#2563EB" viewBox="0 0 24 24" width="20" height="20">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                                </svg>
-                            </div>
-                            <span style="font-size: 0.8rem; font-weight: 600; color: #2563EB; background: #DBEAFE; padding: 2px 8px; border-radius: 12px;">Crítico</span>
-                        </div>
-                        <p style="color: #6B7280; font-size: 0.875rem; margin: 12px 0 4px 0;">Maior Gargalo</p>
-                        <div id="gargalosMaiorGargalo" style="font-size: 1.1rem; font-weight: 700; color: #111827;">-</div>
-                    </div>
-
-                    <!-- Taxa Conversão Perdida -->
-                    <div class="kpi-card">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #F3E8FF, #E9D5FF); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                <svg fill="none" stroke="#7C3AED" viewBox="0 0 24 24" width="20" height="20">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <p style="color: #6B7280; font-size: 0.875rem; margin: 12px 0 4px 0;">Conversão Potencial</p>
-                        <div style="display: flex; align-items: baseline; gap: 4px;">
-                            <span id="gargalosConversaoPotencial" style="font-size: 2rem; font-weight: 700; color: #111827;">-</span>
-                            <span style="font-size: 0.9rem; font-weight: 500; color: #6B7280;">%</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Insight da MarIA -->
                 <div style="background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%); border-radius: 16px; padding: 24px; margin-bottom: 24px; position: relative; overflow: hidden;">
                     <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);"></div>
@@ -4320,18 +4253,8 @@
                 ].sort((a, b) => b.qtd - a.qtd);
                 const maiorGargalo = gargalosOrdenados[0];
 
-                // Taxa de conversão potencial (se não houvesse gargalos)
-                const totalInscritos = prestadores.length;
-                const conversaoPotencial = totalInscritos > 0 ? Math.round(((totalInscritos - totalBloqueados) / totalInscritos) * 100) : 0;
-
-                // Atualizar KPIs
-                document.getElementById('gargalosTotalBloqueados').textContent = totalBloqueados;
-                document.getElementById('gargalosAguardandoAcao').textContent = aguardandoMais7Dias;
-                document.getElementById('gargalosMaiorGargalo').textContent = `${maiorGargalo.nome} (${maiorGargalo.qtd})`;
-                document.getElementById('gargalosConversaoPotencial').textContent = conversaoPotencial;
-                document.getElementById('gargalosTotalTrend').textContent = `${Math.round((totalBloqueados / totalInscritos) * 100)}% do total`;
-
                 // Gerar insight
+                const totalInscritos = prestadores.length;
                 const insight = gerarInsightGargalos(gargalos, totalInscritos, maiorGargalo, aguardandoMais7Dias);
                 document.getElementById('gargalosInsightText').textContent = insight;
 
