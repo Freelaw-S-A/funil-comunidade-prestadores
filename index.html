@@ -4081,39 +4081,55 @@
         // ==========================================
         async function carregarComparativoCapacityDemanda(capacityPorArea) {
             try {
-                // Buscar dados de demanda da API pública do Metabase
-                const demandaResponse = await fetch('https://metrics.freelaw.work/public/question/25ebf5bd-fc0f-4831-94e0-cf5de8a24639.json');
+                // Dados de demanda (fallback caso API falhe por CORS)
+                // Fonte: https://metrics.freelaw.work/public/question/25ebf5bd-fc0f-4831-94e0-cf5de8a24639
+                const demandaFallback = {
+                    'Direito Civil': 40,
+                    'Direito Previdenciário': 27,
+                    'Direito Trabalhista': 24,
+                    'Direito do Consumidor': 11,
+                    'Direito Bancário': 6,
+                    'Direito Administrativo': 5,
+                    'Direito Constitucional': 3,
+                    'Direito Penal': 2,
+                    'Direito Tributário': 2
+                };
 
-                if (!demandaResponse.ok) throw new Error('Falha ao carregar demanda');
+                let demandaPorArea = {};
 
-                const demandaJson = await demandaResponse.json();
-                const demandaData = demandaJson.data?.rows || [];
+                // Tentar buscar dados atualizados da API do Metabase
+                try {
+                    const demandaResponse = await fetch('https://metrics.freelaw.work/public/question/25ebf5bd-fc0f-4831-94e0-cf5de8a24639.json');
+                    if (demandaResponse.ok) {
+                        const demandaJson = await demandaResponse.json();
+                        const demandaData = demandaJson.data?.rows || [];
+                        demandaData.forEach(row => {
+                            demandaPorArea[row[0]] = row[1];
+                        });
+                        console.log('%c📊 DEMANDA - Metabase API (live)', 'background: #10B981; color: white; padding: 2px 6px; border-radius: 4px;', demandaPorArea);
+                    } else {
+                        throw new Error('API retornou erro');
+                    }
+                } catch (apiError) {
+                    console.log('%c📊 DEMANDA - Usando fallback (CORS)', 'background: #F59E0B; color: white; padding: 2px 6px; border-radius: 4px;', demandaFallback);
+                    demandaPorArea = demandaFallback;
+                }
 
-                // Mapear demanda por área (normalizar nomes)
-                const demandaPorArea = {};
-                demandaData.forEach(row => {
-                    const area = row[0]; // Nome da área
-                    const quantidade = row[1]; // Quantidade de serviços
-                    demandaPorArea[area] = quantidade;
-                });
-
-                console.log('%c📊 DEMANDA - Metabase API', 'background: #F59E0B; color: white; padding: 2px 6px; border-radius: 4px;', demandaPorArea);
-
-                // Mapeamento de nomes de áreas (capacity usa nomes simplificados)
+                // Mapeamento de nomes de áreas (Supabase usa "Direito X", capacity usa "Direito X")
                 const mapeamentoAreas = {
-                    'Civil': 'Direito Civil',
-                    'Previdenciário': 'Direito Previdenciário',
-                    'Trabalhista': 'Direito Trabalhista',
-                    'Consumidor': 'Direito do Consumidor',
-                    'Bancário': 'Direito Bancário',
-                    'Administrativo': 'Direito Administrativo',
-                    'Constitucional': 'Direito Constitucional',
-                    'Penal': 'Direito Penal',
-                    'Tributário': 'Direito Tributário',
-                    'Empresarial': 'Direito Empresarial',
-                    'Imobiliário': 'Direito Imobiliário',
-                    'Família': 'Direito de Família',
-                    'Ambiental': 'Direito Ambiental'
+                    'Direito Civil': 'Direito Civil',
+                    'Direito Previdenciário': 'Direito Previdenciário',
+                    'Direito Trabalhista': 'Direito Trabalhista',
+                    'Direito do Consumidor': 'Direito do Consumidor',
+                    'Direito Bancário': 'Direito Bancário',
+                    'Direito Administrativo': 'Direito Administrativo',
+                    'Direito Constitucional': 'Direito Constitucional',
+                    'Direito Penal': 'Direito Penal',
+                    'Direito Tributário': 'Direito Tributário',
+                    'Direito Empresarial': 'Direito Empresarial',
+                    'Direito Imobiliário': 'Direito Imobiliário',
+                    'Direito de Família': 'Direito de Família',
+                    'Direito Ambiental': 'Direito Ambiental'
                 };
 
                 // Criar dados comparativos
@@ -4121,38 +4137,24 @@
                 let totalCapacity = 0;
                 let totalDemanda = 0;
 
-                // Processar todas as áreas (união de capacity e demanda)
-                const todasAreas = new Set([
-                    ...Object.keys(capacityPorArea),
-                    ...Object.keys(demandaPorArea).map(a => {
-                        // Tentar encontrar versão simplificada
-                        for (const [simples, completo] of Object.entries(mapeamentoAreas)) {
-                            if (completo === a) return simples;
-                        }
-                        return a.replace('Direito ', '').replace('de ', '');
-                    })
-                ]);
+                // Processar todas as áreas da demanda (que são as que importam para comparação)
+                Object.entries(demandaPorArea).forEach(([areaDemanda, demanda]) => {
+                    // Encontrar capacity correspondente (capacityPorArea usa mesmo nome)
+                    const capacity = capacityPorArea[areaDemanda]?.capacitySum || 0;
 
-                todasAreas.forEach(areaSimples => {
-                    const areaCompleta = mapeamentoAreas[areaSimples] || `Direito ${areaSimples}`;
-                    const capacity = capacityPorArea[areaSimples]?.capacitySum || 0;
-                    const demanda = demandaPorArea[areaCompleta] || demandaPorArea[areaSimples] || 0;
+                    const saldo = capacity - demanda;
+                    const cobertura = demanda > 0 ? Math.round((capacity / demanda) * 100) : (capacity > 0 ? 999 : 0);
 
-                    if (capacity > 0 || demanda > 0) {
-                        const saldo = capacity - demanda;
-                        const cobertura = demanda > 0 ? Math.round((capacity / demanda) * 100) : (capacity > 0 ? 999 : 0);
+                    comparativo.push({
+                        area: areaDemanda,
+                        capacity: Math.round(capacity),
+                        demanda: demanda,
+                        saldo: Math.round(saldo),
+                        cobertura: cobertura
+                    });
 
-                        comparativo.push({
-                            area: areaSimples,
-                            capacity: Math.round(capacity),
-                            demanda: demanda,
-                            saldo: Math.round(saldo),
-                            cobertura: cobertura
-                        });
-
-                        totalCapacity += capacity;
-                        totalDemanda += demanda;
-                    }
+                    totalCapacity += capacity;
+                    totalDemanda += demanda;
                 });
 
                 // Ordenar por demanda (maior primeiro)
