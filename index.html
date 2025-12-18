@@ -2580,16 +2580,17 @@
             <!-- ==================== SEÇÃO GARGALOS ==================== -->
             <section class="page-section" id="sectionGargalos">
                 <!-- Header Gargalos -->
-                <header class="header">
+                <header class="header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
                     <div class="header-left">
-                        <h1 class="header-title">Gargalos do Funil</h1>
-                        <span class="header-badge" style="background: linear-gradient(135deg, #EF4444, #DC2626); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-left: 12px;">
-                            <span style="display: inline-block; width: 6px; height: 6px; background: white; border-radius: 50%; margin-right: 6px; animation: pulse 2s infinite;"></span>
-                            Alertas Ativos
-                        </span>
-                        <p class="header-subtitle" style="color: #6B7280; font-size: 0.875rem; margin-top: 4px;">Identificação automática de bloqueios no funil com impacto na ativação</p>
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                            <h1 class="header-title" style="margin: 0; font-size: 1.75rem; font-weight: 700; color: #111827;">Gargalos do Funil</h1>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="background: linear-gradient(135deg, #3B82F6, #2563EB); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Alertas Ativos</span>
+                            <span style="color: #6B7280; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.3px;">Identificação automática de bloqueios no funil com impacto na ativação</span>
+                        </div>
                     </div>
-                    <button class="export-btn" onclick="exportarGargalosCSV()">
+                    <button class="export-btn" onclick="exportarGargalosCSV()" style="display: flex; align-items: center; gap: 8px; background: white; border: 1px solid #E5E7EB; padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; color: #374151; cursor: pointer;">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                         </svg>
