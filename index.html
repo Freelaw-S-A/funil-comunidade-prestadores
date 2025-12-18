@@ -2698,7 +2698,6 @@
                                 <option value="prova">Prova Técnica</option>
                                 <option value="onboarding">Onboarding</option>
                                 <option value="nf">Nota Fiscal</option>
-                                <option value="admin">Verificação Admin</option>
                             </select>
                         </div>
                     </div>
@@ -4115,8 +4114,7 @@
                 const gargalosOrdenados = [
                     { nome: 'Prova Técnica', qtd: gargalos.naoFizeramProva.length + gargalos.reprovaramProva.length },
                     { nome: 'Onboarding', qtd: gargalos.aguardandoOnboarding.length },
-                    { nome: 'Nota Fiscal', qtd: gargalos.naoEmitemNF.length },
-                    { nome: 'Verificação Admin', qtd: gargalos.pendentesAdmin.length }
+                    { nome: 'Nota Fiscal', qtd: gargalos.naoEmitemNF.length }
                 ].sort((a, b) => b.qtd - a.qtd);
                 const maiorGargalo = gargalosOrdenados[0];
 
@@ -4175,9 +4173,6 @@
             } else if (maiorGargalo.nome === 'Onboarding') {
                 insight += `${gargalos.aguardandoOnboarding.length} pessoas passaram na prova mas não completaram o onboarding. `;
                 insight += `Recomendação: Simplificar o processo ou enviar lembretes personalizados.`;
-            } else {
-                insight += `${gargalos.pendentesAdmin.length} candidatos aguardam verificação manual do admin. `;
-                insight += `Recomendação: Priorizar a verificação para liberar candidatos qualificados.`;
             }
 
             return insight;
@@ -4217,15 +4212,6 @@
                     bgCor: '#F3E8FF',
                     items: [
                         { label: 'Não emitem NF', qtd: gargalos.naoEmitemNF.length, mediaDias: calcMediaDias(gargalos.naoEmitemNF) }
-                    ]
-                },
-                {
-                    titulo: 'Verificação Admin',
-                    icon: '✅',
-                    cor: '#3B82F6',
-                    bgCor: '#DBEAFE',
-                    items: [
-                        { label: 'Pendentes marcação', qtd: gargalos.pendentesAdmin.length, mediaDias: calcMediaDias(gargalos.pendentesAdmin) }
                     ]
                 }
             ];
