@@ -1997,9 +1997,9 @@
                 <div class="cards-grid" style="display:none;"></div>
                 <div class="mini-cards-grid" style="display:none;"></div>
 
-            <!-- Funil Ampulheta -->
+            <!-- Funil -->
             <div class="funnel-section" style="margin-top: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <h2 style="font-size: 1.1rem; font-weight: 700; color: #1F1F3D; margin-bottom: 16px; text-align: center;">Funil Ampulheta</h2>
+                <h2 style="font-size: 1.1rem; font-weight: 700; color: #1F1F3D; margin-bottom: 16px; text-align: center;">Funil</h2>
                 <div class="funnel-container" style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; max-width: 450px;">
 
                     <!-- Inscritos -->
@@ -2019,7 +2019,7 @@
                     </div>
 
                     <!-- Aprovados Prova -->
-                    <div style="width: 92%; background: #6D28D9; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-radius: 10px;">
+                    <div style="width: 85%; background: #6D28D9; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-radius: 10px;">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div style="width: 26px; height: 26px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                                 <svg fill="none" stroke="white" viewBox="0 0 24 24" width="13" height="13">
@@ -2034,121 +2034,19 @@
                         </div>
                     </div>
 
-                    <!-- Ativados -->
-                    <div style="width: 84%; background: #7C3AED; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-radius: 10px;">
+                    <!-- Ativos Agora -->
+                    <div style="width: 70%; background: #7C3AED; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-radius: 10px;">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 24px; height: 24px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <svg fill="none" stroke="white" viewBox="0 0 24 24" width="12" height="12">
+                            <div style="width: 26px; height: 26px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <svg fill="none" stroke="white" viewBox="0 0 24 24" width="13" height="13">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                 </svg>
                             </div>
-                            <span style="font-size: 0.8rem; font-weight: 600; color: white;">Ativos Agora</span>
+                            <span style="font-size: 0.85rem; font-weight: 600; color: white;">Ativos Agora</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span id="funnelAtivados" style="font-size: 1.05rem; font-weight: 700; color: white;">...</span>
-                            <span id="funnelAtivadosPerc" style="font-size: 0.7rem; color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">36.2%</span>
-                        </div>
-                    </div>
-
-                    <!-- Tier S -->
-                    <div style="width: 76%; background: #8B5CF6; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 22px; height: 22px; background: rgba(255,255,255,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <span style="font-size: 0.6rem; font-weight: 800; color: white;">S</span>
-                            </div>
-                            <span style="font-size: 0.75rem; font-weight: 600; color: white;">Tier S</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span id="funnelTierS" style="font-size: 0.95rem; font-weight: 700; color: white;">6</span>
-                            <span id="funnelTierSPerc" style="font-size: 0.65rem; color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.15); padding: 2px 5px; border-radius: 3px;">4.8%</span>
-                        </div>
-                    </div>
-
-                    <!-- Tier A -->
-                    <div style="width: 80%; background: #A78BFA; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 22px; height: 22px; background: rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <span style="font-size: 0.6rem; font-weight: 800; color: #4C1D95;">A</span>
-                            </div>
-                            <span style="font-size: 0.75rem; font-weight: 600; color: white;">Tier A</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span id="funnelTierA" style="font-size: 0.95rem; font-weight: 700; color: white;">5</span>
-                            <span id="funnelTierAPerc" style="font-size: 0.65rem; color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.2); padding: 2px 5px; border-radius: 3px;">4.0%</span>
-                        </div>
-                    </div>
-
-                    <!-- Tier B -->
-                    <div style="width: 84%; background: #C4B5FD; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 22px; height: 22px; background: rgba(76,29,149,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <span style="font-size: 0.6rem; font-weight: 800; color: #4C1D95;">B</span>
-                            </div>
-                            <span style="font-size: 0.75rem; font-weight: 600; color: #4C1D95;">Tier B</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span id="funnelTierB" style="font-size: 0.95rem; font-weight: 700; color: #4C1D95;">2</span>
-                            <span id="funnelTierBPerc" style="font-size: 0.65rem; color: #4C1D95; background: rgba(76,29,149,0.12); padding: 2px 5px; border-radius: 3px;">1.6%</span>
-                        </div>
-                    </div>
-
-                    <!-- Tier C -->
-                    <div style="width: 88%; background: #DDD6FE; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 22px; height: 22px; background: rgba(76,29,149,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <span style="font-size: 0.6rem; font-weight: 800; color: #4C1D95;">C</span>
-                            </div>
-                            <span style="font-size: 0.75rem; font-weight: 600; color: #4C1D95;">Tier C</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span id="funnelTierC" style="font-size: 0.95rem; font-weight: 700; color: #4C1D95;">4</span>
-                            <span id="funnelTierCPerc" style="font-size: 0.65rem; color: #4C1D95; background: rgba(76,29,149,0.1); padding: 2px 5px; border-radius: 3px;">3.2%</span>
-                        </div>
-                    </div>
-
-                    <!-- Tier D -->
-                    <div style="width: 92%; background: #EDE9FE; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 22px; height: 22px; background: rgba(76,29,149,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <span style="font-size: 0.6rem; font-weight: 800; color: #4C1D95;">D</span>
-                            </div>
-                            <span style="font-size: 0.75rem; font-weight: 600; color: #4C1D95;">Tier D</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span id="funnelTierD" style="font-size: 0.95rem; font-weight: 700; color: #4C1D95;">8</span>
-                            <span id="funnelTierDPerc" style="font-size: 0.65rem; color: #4C1D95; background: rgba(76,29,149,0.08); padding: 2px 5px; border-radius: 3px;">6.4%</span>
-                        </div>
-                    </div>
-
-                    <!-- Onboarding -->
-                    <div style="width: 96%; background: #A855F7; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 24px; height: 24px; background: rgba(255,255,255,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <svg fill="none" stroke="white" viewBox="0 0 24 24" width="12" height="12">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                                </svg>
-                            </div>
-                            <span style="font-size: 0.8rem; font-weight: 600; color: white;">Onboarding</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span id="tierOnboardingCount" style="font-size: 1rem; font-weight: 700; color: white;">93</span>
-                            <span id="tierOnboardingPerc" style="font-size: 0.65rem; color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.2); padding: 2px 5px; border-radius: 3px;">74.4%</span>
-                        </div>
-                    </div>
-
-                    <!-- Inativo -->
-                    <div style="width: 100%; background: #F5F3FF; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 24px; height: 24px; background: rgba(76,29,149,0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <svg fill="none" stroke="#6B7280" viewBox="0 0 24 24" width="12" height="12">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                                </svg>
-                            </div>
-                            <span style="font-size: 0.8rem; font-weight: 600; color: #6B7280;">Inativo</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span id="tierInativoCount" style="font-size: 1rem; font-weight: 700; color: #6B7280;">7</span>
-                            <span id="tierInativoPerc" style="font-size: 0.65rem; color: #9CA3AF; background: rgba(76,29,149,0.06); padding: 2px 5px; border-radius: 3px;">5.6%</span>
+                            <span id="funnelAtivados" style="font-size: 1.2rem; font-weight: 700; color: white;">...</span>
+                            <span id="funnelAtivadosPerc" style="font-size: 0.7rem; color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">35.7%</span>
                         </div>
                     </div>
 
@@ -2183,9 +2081,13 @@
                             <div style="font-size: 0.55rem; font-weight: 700; color: white; text-transform: uppercase;">Tier D</div>
                             <div id="tierDCount" style="font-size: 1rem; font-weight: 700; color: white;">8</div>
                         </div>
+                        <div style="background: #A855F7; border-radius: 6px; padding: 8px 12px; text-align: center; min-width: 50px;">
+                            <div style="font-size: 0.55rem; font-weight: 700; color: rgba(255,255,255,0.8); text-transform: uppercase;">Onboarding</div>
+                            <div id="tierOnboardingCount" style="font-size: 1rem; font-weight: 700; color: white;">93</div>
+                        </div>
                         <div style="background: #DDD6FE; border-radius: 6px; padding: 8px 12px; text-align: center; min-width: 50px;">
                             <div style="font-size: 0.55rem; font-weight: 700; color: #4C1D95; text-transform: uppercase;">Inativo</div>
-                            <div id="tierInativoCount" style="font-size: 1rem; font-weight: 700; color: #4C1D95;">7</div>
+                            <div id="tierInativoCount" style="font-size: 1rem; font-weight: 700; color: #4C1D95;">8</div>
                         </div>
                     </div>
 
