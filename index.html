@@ -2952,65 +2952,33 @@
         // RENDER DASHBOARD
         // ==========================================
         function renderDashboard(totais, ativosCount, tierSCount = 6) {
-            // Total Inscritos
-            document.getElementById('totalInscritos').textContent = totais.inscritos.toLocaleString('pt-BR');
+            // Função auxiliar para atualização segura
+            const safeSet = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
+            };
 
-            // Aprovados
-            document.getElementById('totalAprovados').textContent = totais.aprovTotal.toLocaleString('pt-BR');
             const percAprovados = ((totais.aprovTotal / totais.inscritos) * 100).toFixed(1);
-            document.getElementById('badgeAprovados').textContent = `${percAprovados}%`;
-
-            // Taxa de Ativação
             const taxaAtivacao = ((totais.ativados / totais.aprovTotal) * 100).toFixed(1);
-            document.getElementById('taxaAtivacao').textContent = `${taxaAtivacao}%`;
-            document.getElementById('badgeAtivados').textContent = `${totais.ativados.toLocaleString('pt-BR')} ativados`;
 
-            // Ativos Agora
-            document.getElementById('ativosAgora').textContent = ativosCount.toLocaleString('pt-BR');
-
-            // Mini Cards
-            document.getElementById('pendentesAdmin').textContent = totais.pendentes.toLocaleString('pt-BR');
-
-            // ==================== NOVOS CARDS DASHBOARD ====================
-            // Card 1: Total Inscritos
-            const totalInscritosCard = document.getElementById('totalInscritosCard');
-            if (totalInscritosCard) totalInscritosCard.textContent = totais.inscritos.toLocaleString('pt-BR');
-
-            // Badge aprovados (percentual)
-            const badgeAprovadosCard = document.getElementById('badgeAprovadosCard');
-            if (badgeAprovadosCard) badgeAprovadosCard.textContent = `${percAprovados}%`;
-
-            // Card 2: Aprovados
-            const totalAprovadosCard = document.getElementById('totalAprovadosCard');
-            if (totalAprovadosCard) totalAprovadosCard.textContent = totais.aprovTotal.toLocaleString('pt-BR');
-
-            // Card 3: Taxa de Ativação
-            const taxaAtivacaoCard = document.getElementById('taxaAtivacaoCard');
-            if (taxaAtivacaoCard) taxaAtivacaoCard.textContent = `${taxaAtivacao}%`;
-
-            // Badge ativados
-            const badgeAtivadosCard = document.getElementById('badgeAtivadosCard');
-            if (badgeAtivadosCard) badgeAtivadosCard.textContent = `${totais.ativados.toLocaleString('pt-BR')} ativados`;
-
-            // Card 4: Ativos Agora
-            const ativosAgoraCard = document.getElementById('ativosAgoraCard');
-            if (ativosAgoraCard) ativosAgoraCard.textContent = ativosCount.toLocaleString('pt-BR');
+            // Cards de métricas de suporte
+            safeSet('totalInscritosCard', totais.inscritos.toLocaleString('pt-BR'));
+            safeSet('badgeAprovadosCard', `${percAprovados}%`);
+            safeSet('totalAprovadosCard', totais.aprovTotal.toLocaleString('pt-BR'));
+            safeSet('taxaAtivacaoCard', `${taxaAtivacao}%`);
+            safeSet('badgeAtivadosCard', `${totais.ativados.toLocaleString('pt-BR')} ativados`);
+            safeSet('ativosAgoraCard', ativosCount.toLocaleString('pt-BR'));
 
             // Mini Cards
-            const pendentesAdminCard = document.getElementById('pendentesAdminCard');
-            if (pendentesAdminCard) pendentesAdminCard.textContent = totais.pendentes.toLocaleString('pt-BR');
-
-            const bloqueadosCard = document.getElementById('bloqueadosCard');
-            if (bloqueadosCard) bloqueadosCard.textContent = totais.bloqueados.toLocaleString('pt-BR');
-
-            const churnTotalCard = document.getElementById('churnTotalCard');
-            if (churnTotalCard) churnTotalCard.textContent = (totais.bloqueados + totais.desativados + totais.saidaVol + totais.desistentes).toLocaleString('pt-BR');
+            safeSet('pendentesAdminCard', totais.pendentes.toLocaleString('pt-BR'));
+            safeSet('bloqueadosCard', totais.bloqueados.toLocaleString('pt-BR'));
+            safeSet('churnTotalCard', (totais.bloqueados + totais.desativados + totais.saidaVol + totais.desistentes).toLocaleString('pt-BR'));
 
             // Update timestamp
             const now = new Date();
             const dateStr = now.toLocaleDateString('pt-BR');
             const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('lastUpdate').textContent = `${dateStr} às ${timeStr}`;
+            safeSet('lastUpdate', `${dateStr} às ${timeStr}`);
 
             // Atualizar Funil Ampulheta
             const funnelInscritos = totais.inscritos;
