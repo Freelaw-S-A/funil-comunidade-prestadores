@@ -1739,6 +1739,12 @@
                     </svg>
                     <span>Capacity</span>
                 </button>
+                <button class="nav-item" data-section="gargalos" onclick="navigateTo('gargalos')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <span>Gargalos</span>
+                </button>
             </div>
 
             <div class="nav-section">
@@ -2571,6 +2577,149 @@
                 </div>
             </section>
 
+            <!-- ==================== SEÇÃO GARGALOS ==================== -->
+            <section class="page-section" id="sectionGargalos">
+                <!-- Header Gargalos -->
+                <header class="header">
+                    <div class="header-left">
+                        <h1 class="header-title">Gargalos do Funil</h1>
+                        <span class="header-badge" style="background: linear-gradient(135deg, #EF4444, #DC2626); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-left: 12px;">
+                            <span style="display: inline-block; width: 6px; height: 6px; background: white; border-radius: 50%; margin-right: 6px; animation: pulse 2s infinite;"></span>
+                            Alertas Ativos
+                        </span>
+                        <p class="header-subtitle" style="color: #6B7280; font-size: 0.875rem; margin-top: 4px;">Identificação automática de bloqueios no funil com impacto na ativação</p>
+                    </div>
+                    <button class="export-btn" onclick="exportarGargalosCSV()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Exportar CSV
+                    </button>
+                </header>
+
+                <!-- KPI Cards Resumo -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px;">
+                    <!-- Total Bloqueados -->
+                    <div class="kpi-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #FEE2E2, #FECACA); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <svg fill="none" stroke="#DC2626" viewBox="0 0 24 24" width="20" height="20">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                            </div>
+                            <span id="gargalosTotalTrend" style="font-size: 0.8rem; font-weight: 600; color: #DC2626; background: #FEE2E2; padding: 2px 8px; border-radius: 12px;">-</span>
+                        </div>
+                        <p style="color: #6B7280; font-size: 0.875rem; margin: 12px 0 4px 0;">Total Bloqueados</p>
+                        <div style="display: flex; align-items: baseline; gap: 4px;">
+                            <span id="gargalosTotalBloqueados" style="font-size: 2rem; font-weight: 700; color: #111827;">-</span>
+                            <span style="font-size: 0.9rem; font-weight: 500; color: #6B7280;">pessoas</span>
+                        </div>
+                    </div>
+
+                    <!-- Capacity Perdida -->
+                    <div class="kpi-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <svg fill="none" stroke="#D97706" viewBox="0 0 24 24" width="20" height="20">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                                </svg>
+                            </div>
+                            <span style="font-size: 0.8rem; font-weight: 600; color: #D97706; background: #FEF3C7; padding: 2px 8px; border-radius: 12px;">Impacto</span>
+                        </div>
+                        <p style="color: #6B7280; font-size: 0.875rem; margin: 12px 0 4px 0;">Capacity Perdida</p>
+                        <div style="display: flex; align-items: baseline; gap: 4px;">
+                            <span id="gargalosCapacityPerdida" style="font-size: 2rem; font-weight: 700; color: #111827;">-</span>
+                            <span style="font-size: 0.9rem; font-weight: 500; color: #6B7280;">peças/dia</span>
+                        </div>
+                    </div>
+
+                    <!-- Maior Gargalo -->
+                    <div class="kpi-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #DBEAFE, #BFDBFE); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <svg fill="none" stroke="#2563EB" viewBox="0 0 24 24" width="20" height="20">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                            </div>
+                            <span style="font-size: 0.8rem; font-weight: 600; color: #2563EB; background: #DBEAFE; padding: 2px 8px; border-radius: 12px;">Crítico</span>
+                        </div>
+                        <p style="color: #6B7280; font-size: 0.875rem; margin: 12px 0 4px 0;">Maior Gargalo</p>
+                        <div id="gargalosMaiorGargalo" style="font-size: 1.1rem; font-weight: 700; color: #111827;">-</div>
+                    </div>
+
+                    <!-- Taxa Conversão Perdida -->
+                    <div class="kpi-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #F3E8FF, #E9D5FF); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <svg fill="none" stroke="#7C3AED" viewBox="0 0 24 24" width="20" height="20">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <p style="color: #6B7280; font-size: 0.875rem; margin: 12px 0 4px 0;">Conversão Potencial</p>
+                        <div style="display: flex; align-items: baseline; gap: 4px;">
+                            <span id="gargalosConversaoPotencial" style="font-size: 2rem; font-weight: 700; color: #111827;">-</span>
+                            <span style="font-size: 0.9rem; font-weight: 500; color: #6B7280;">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insight da MarIA -->
+                <div style="background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%); border-radius: 16px; padding: 24px; margin-bottom: 24px; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);"></div>
+                    <div style="display: flex; align-items: flex-start; gap: 16px; position: relative; z-index: 1;">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #8B5CF6, #A78BFA); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <span style="font-size: 1.5rem;">🎯</span>
+                        </div>
+                        <div>
+                            <h3 style="color: white; font-size: 1.1rem; font-weight: 600; margin: 0 0 8px 0;">Análise de Impacto</h3>
+                            <p id="gargalosInsightText" style="color: rgba(255,255,255,0.85); font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                Carregando análise...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cards de Gargalos Detalhados -->
+                <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 16px;">Gargalos por Etapa do Funil</h3>
+                <div id="gargalosCardsGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 24px;">
+                    <!-- Cards serão renderizados via JS -->
+                    <div style="grid-column: span 2; text-align: center; padding: 40px; color: #6B7280;">Carregando gargalos...</div>
+                </div>
+
+                <!-- Tabela de Pessoas Bloqueadas -->
+                <div class="table-container" style="background: white; border-radius: 16px; border: 1px solid #E5E7EB; overflow: hidden;">
+                    <div style="padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0;">Pessoas Bloqueadas por Etapa</h3>
+                        <div style="display: flex; gap: 12px;">
+                            <input type="text" id="gargalosSearchInput" placeholder="Buscar por nome ou email..." onkeyup="filtrarTabelaGargalos()" style="padding: 8px 14px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 0.875rem; width: 220px; outline: none;">
+                            <select id="gargalosEtapaFilter" onchange="filtrarTabelaGargalos()" style="padding: 8px 14px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 0.875rem; background: white; cursor: pointer; outline: none;">
+                                <option value="">Todas as etapas</option>
+                                <option value="prova">Prova Técnica</option>
+                                <option value="onboarding">Onboarding</option>
+                                <option value="nf">Nota Fiscal</option>
+                                <option value="admin">Verificação Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse;" id="gargalosTable">
+                        <thead>
+                            <tr style="background: #F9FAFB; border-bottom: 1px solid #E5E7EB;">
+                                <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Nome</th>
+                                <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Email</th>
+                                <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Gargalo</th>
+                                <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Capacity</th>
+                                <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Dias Parado</th>
+                                <th style="text-align: center; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gargalosTableBody">
+                            <tr><td colspan="6" style="text-align: center; padding: 40px; color: #6B7280;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
             <!-- ==================== SEÇÃO PERFORMANCE ==================== -->
             <section class="page-section" id="sectionPerformance">
                 <!-- Header Performance -->
@@ -2750,6 +2899,9 @@
             } else if (section === 'capacity') {
                 targetSection = document.getElementById('sectionCapacity');
                 setTimeout(() => carregarCapacity(), 100);
+            } else if (section === 'gargalos') {
+                targetSection = document.getElementById('sectionGargalos');
+                setTimeout(() => carregarGargalos(), 100);
             }
 
             if (targetSection) {
@@ -3878,6 +4030,331 @@
         function exportarCapacityCSV() {
             // Implementar exportação CSV
             alert('Funcionalidade de exportação em desenvolvimento');
+        }
+
+        // ==========================================
+        // SEÇÃO GARGALOS - Alertas automáticos
+        // ==========================================
+        let gargalosTableData = [];
+
+        async function carregarGargalos() {
+            try {
+                // Buscar todos os prestadores inscritos com seus dados
+                const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/prestadores_inscricoes?select=id,nome_completo,email,nota_prova_tecnica,pode_emitir_nota_fiscal,producao_media_diaria,prestador_verificado,created_at,disponibilidade_diaria_horas`, {
+                    headers: {
+                        'apikey': SUPABASE_CONFIG.anonKey,
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Falha ao carregar dados');
+                const prestadores = await response.json();
+
+                // Buscar quem passou no onboarding
+                const onbResponse = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/onboarding_resultados?select=email,acertos`, {
+                    headers: {
+                        'apikey': SUPABASE_CONFIG.anonKey,
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+                    }
+                });
+                const onboardingData = onbResponse.ok ? await onbResponse.json() : [];
+                const onboardingAprovados = new Set(onboardingData.filter(o => o.acertos === 5).map(o => o.email));
+
+                // Mapear capacity
+                const capacityValues = { '1–2': 1.5, '3–5': 4, '6–10': 8, '11–15': 13, 'mais-15': 20 };
+
+                // Calcular gargalos
+                const gargalos = {
+                    naoFizeramProva: [],
+                    reprovaramProva: [],
+                    aguardandoOnboarding: [],
+                    naoEmitemNF: [],
+                    pendentesAdmin: [],
+                    baixaDisponibilidade: []
+                };
+
+                const hoje = new Date();
+
+                prestadores.forEach(p => {
+                    const capacityNum = capacityValues[p.producao_media_diaria] || 0;
+                    const diasParado = Math.floor((hoje - new Date(p.created_at)) / (1000 * 60 * 60 * 24));
+                    const baseInfo = { ...p, capacityNum, diasParado };
+
+                    // Não fizeram prova
+                    if (p.nota_prova_tecnica === null) {
+                        gargalos.naoFizeramProva.push({ ...baseInfo, gargalo: 'Não fez prova', tipo: 'prova' });
+                    }
+                    // Reprovaram prova
+                    else if (p.nota_prova_tecnica < 7) {
+                        gargalos.reprovaramProva.push({ ...baseInfo, gargalo: 'Reprovou prova', tipo: 'prova' });
+                    }
+                    // Passou na prova mas não fez onboarding
+                    else if (p.nota_prova_tecnica >= 7 && !onboardingAprovados.has(p.email)) {
+                        gargalos.aguardandoOnboarding.push({ ...baseInfo, gargalo: 'Aguardando onboarding', tipo: 'onboarding' });
+                    }
+                    // Não emite NF
+                    if (p.pode_emitir_nota_fiscal === 'Não') {
+                        gargalos.naoEmitemNF.push({ ...baseInfo, gargalo: 'Não emite NF', tipo: 'nf' });
+                    }
+                    // Pendentes verificação admin (aprovados mas não verificados)
+                    if (p.nota_prova_tecnica >= 7 && !p.prestador_verificado) {
+                        gargalos.pendentesAdmin.push({ ...baseInfo, gargalo: 'Pendente admin', tipo: 'admin' });
+                    }
+                    // Baixa disponibilidade (1-2h)
+                    if (p.disponibilidade_diaria_horas === '1–2') {
+                        gargalos.baixaDisponibilidade.push({ ...baseInfo, gargalo: 'Baixa disponibilidade', tipo: 'disponibilidade' });
+                    }
+                });
+
+                console.log('%c✅ GARGALOS carregados', 'background: #EF4444; color: white; padding: 2px 6px; border-radius: 4px;', gargalos);
+
+                // Calcular totais
+                const totalBloqueados = gargalos.naoFizeramProva.length + gargalos.reprovaramProva.length + gargalos.naoEmitemNF.length;
+                const capacityPerdidaProva = gargalos.naoFizeramProva.reduce((sum, p) => sum + p.capacityNum, 0) +
+                                              gargalos.reprovaramProva.reduce((sum, p) => sum + p.capacityNum, 0);
+                const capacityPerdidaNF = gargalos.naoEmitemNF.reduce((sum, p) => sum + p.capacityNum, 0);
+                const capacityTotal = capacityPerdidaProva + capacityPerdidaNF;
+
+                // Encontrar maior gargalo
+                const gargalosOrdenados = [
+                    { nome: 'Prova Técnica', qtd: gargalos.naoFizeramProva.length + gargalos.reprovaramProva.length },
+                    { nome: 'Onboarding', qtd: gargalos.aguardandoOnboarding.length },
+                    { nome: 'Nota Fiscal', qtd: gargalos.naoEmitemNF.length },
+                    { nome: 'Verificação Admin', qtd: gargalos.pendentesAdmin.length }
+                ].sort((a, b) => b.qtd - a.qtd);
+                const maiorGargalo = gargalosOrdenados[0];
+
+                // Taxa de conversão potencial (se não houvesse gargalos)
+                const totalInscritos = prestadores.length;
+                const conversaoPotencial = totalInscritos > 0 ? Math.round(((totalInscritos - totalBloqueados) / totalInscritos) * 100) : 0;
+
+                // Atualizar KPIs
+                document.getElementById('gargalosTotalBloqueados').textContent = totalBloqueados;
+                document.getElementById('gargalosCapacityPerdida').textContent = Math.round(capacityTotal);
+                document.getElementById('gargalosMaiorGargalo').textContent = `${maiorGargalo.nome} (${maiorGargalo.qtd})`;
+                document.getElementById('gargalosConversaoPotencial').textContent = conversaoPotencial;
+                document.getElementById('gargalosTotalTrend').textContent = `${Math.round((totalBloqueados / totalInscritos) * 100)}% do total`;
+
+                // Gerar insight
+                const insight = gerarInsightGargalos(gargalos, capacityTotal, totalInscritos, maiorGargalo);
+                document.getElementById('gargalosInsightText').textContent = insight;
+
+                // Renderizar cards de gargalos
+                renderGargalosCards(gargalos, capacityValues);
+
+                // Montar dados para tabela (todos os bloqueados)
+                gargalosTableData = [
+                    ...gargalos.naoFizeramProva,
+                    ...gargalos.reprovaramProva,
+                    ...gargalos.naoEmitemNF
+                ].sort((a, b) => b.capacityNum - a.capacityNum);
+
+                renderGargalosTableRows(gargalosTableData);
+
+            } catch (error) {
+                console.error('[Gargalos] Erro:', error);
+                document.getElementById('gargalosInsightText').textContent = 'Erro ao carregar dados de gargalos.';
+            }
+        }
+
+        function gerarInsightGargalos(gargalos, capacityTotal, totalInscritos, maiorGargalo) {
+            const naoFizeram = gargalos.naoFizeramProva.length;
+            const reprovaram = gargalos.reprovaramProva.length;
+            const semNF = gargalos.naoEmitemNF.length;
+
+            let insight = `Identificamos ${naoFizeram + reprovaram + semNF} pessoas bloqueadas no funil, representando uma perda potencial de ${Math.round(capacityTotal)} peças/dia. `;
+
+            if (maiorGargalo.nome === 'Prova Técnica') {
+                insight += `O maior gargalo é a Prova Técnica: ${naoFizeram} inscritos não fizeram a prova e ${reprovaram} reprovaram. `;
+                insight += `Recomendação: Enviar lembretes automáticos e revisar o conteúdo da prova para melhorar a taxa de aprovação.`;
+            } else if (maiorGargalo.nome === 'Nota Fiscal') {
+                insight += `${semNF} prestadores não conseguem emitir NF, impedindo sua ativação completa. `;
+                insight += `Recomendação: Oferecer parceria com contabilidade ou guia de MEI para esses prestadores.`;
+            } else if (maiorGargalo.nome === 'Onboarding') {
+                insight += `${gargalos.aguardandoOnboarding.length} pessoas passaram na prova mas não completaram o onboarding. `;
+                insight += `Recomendação: Simplificar o processo ou enviar lembretes personalizados.`;
+            } else {
+                insight += `${gargalos.pendentesAdmin.length} prestadores aguardam verificação manual do admin. `;
+                insight += `Recomendação: Priorizar a verificação para liberar capacity represada.`;
+            }
+
+            return insight;
+        }
+
+        function renderGargalosCards(gargalos, capacityValues) {
+            const grid = document.getElementById('gargalosCardsGrid');
+            if (!grid) return;
+
+            const cards = [
+                {
+                    titulo: 'Prova Técnica',
+                    icon: '📝',
+                    cor: '#EF4444',
+                    bgCor: '#FEE2E2',
+                    items: [
+                        { label: 'Não fizeram prova', qtd: gargalos.naoFizeramProva.length, capacity: gargalos.naoFizeramProva.reduce((s, p) => s + p.capacityNum, 0) },
+                        { label: 'Reprovaram (<7)', qtd: gargalos.reprovaramProva.length, capacity: gargalos.reprovaramProva.reduce((s, p) => s + p.capacityNum, 0) }
+                    ]
+                },
+                {
+                    titulo: 'Onboarding',
+                    icon: '🎓',
+                    cor: '#F59E0B',
+                    bgCor: '#FEF3C7',
+                    items: [
+                        { label: 'Aguardando onboarding', qtd: gargalos.aguardandoOnboarding.length, capacity: gargalos.aguardandoOnboarding.reduce((s, p) => s + p.capacityNum, 0) }
+                    ]
+                },
+                {
+                    titulo: 'Nota Fiscal',
+                    icon: '🧾',
+                    cor: '#8B5CF6',
+                    bgCor: '#F3E8FF',
+                    items: [
+                        { label: 'Não emitem NF', qtd: gargalos.naoEmitemNF.length, capacity: gargalos.naoEmitemNF.reduce((s, p) => s + p.capacityNum, 0) }
+                    ]
+                },
+                {
+                    titulo: 'Verificação Admin',
+                    icon: '✅',
+                    cor: '#3B82F6',
+                    bgCor: '#DBEAFE',
+                    items: [
+                        { label: 'Pendentes marcação', qtd: gargalos.pendentesAdmin.length, capacity: gargalos.pendentesAdmin.reduce((s, p) => s + p.capacityNum, 0) }
+                    ]
+                }
+            ];
+
+            grid.innerHTML = cards.map(card => {
+                const totalQtd = card.items.reduce((s, i) => s + i.qtd, 0);
+                const totalCapacity = card.items.reduce((s, i) => s + i.capacity, 0);
+
+                return `
+                    <div style="background: white; border-radius: 16px; border: 1px solid #E5E7EB; padding: 20px; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: ${card.cor};"></div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; background: ${card.bgCor}; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                                    ${card.icon}
+                                </div>
+                                <div>
+                                    <h4 style="margin: 0; font-size: 1rem; font-weight: 600; color: #111827;">${card.titulo}</h4>
+                                    <span style="font-size: 0.75rem; color: #6B7280;">${totalQtd} pessoas</span>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: ${card.cor};">${Math.round(totalCapacity)}</div>
+                                <div style="font-size: 0.7rem; color: #6B7280;">peças/dia perdidas</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            ${card.items.map(item => `
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #F9FAFB; border-radius: 8px;">
+                                    <span style="font-size: 0.875rem; color: #374151;">${item.label}</span>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span style="font-size: 0.875rem; font-weight: 600; color: #111827;">${item.qtd}</span>
+                                        <span style="font-size: 0.75rem; color: #6B7280; background: #E5E7EB; padding: 2px 6px; border-radius: 4px;">${Math.round(item.capacity)} p/dia</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderGargalosTableRows(data) {
+            const tbody = document.getElementById('gargalosTableBody');
+            if (!tbody) return;
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #6B7280;">Nenhum bloqueio encontrado</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.slice(0, 50).map(p => {
+                const gargaloCor = {
+                    'prova': '#EF4444',
+                    'onboarding': '#F59E0B',
+                    'nf': '#8B5CF6',
+                    'admin': '#3B82F6'
+                }[p.tipo] || '#6B7280';
+
+                const gargaloBg = {
+                    'prova': '#FEE2E2',
+                    'onboarding': '#FEF3C7',
+                    'nf': '#F3E8FF',
+                    'admin': '#DBEAFE'
+                }[p.tipo] || '#F3F4F6';
+
+                return `
+                    <tr style="border-bottom: 1px solid #E5E7EB;">
+                        <td style="padding: 12px 24px;">
+                            <div style="font-weight: 500; color: #111827;">${p.nome_completo || 'N/A'}</div>
+                        </td>
+                        <td style="padding: 12px 24px; color: #6B7280; font-size: 0.875rem;">${p.email || '-'}</td>
+                        <td style="padding: 12px 24px;">
+                            <span style="background: ${gargaloBg}; color: ${gargaloCor}; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                ${p.gargalo}
+                            </span>
+                        </td>
+                        <td style="padding: 12px 24px;">
+                            <span style="font-weight: 600; color: #111827;">${p.capacityNum}</span>
+                            <span style="color: #6B7280; font-size: 0.75rem;"> p/dia</span>
+                        </td>
+                        <td style="padding: 12px 24px; color: #6B7280;">${p.diasParado} dias</td>
+                        <td style="padding: 12px 24px; text-align: center;">
+                            <button onclick="enviarLembreteGargalo('${p.email}')" style="background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: 500;">
+                                Enviar Lembrete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filtrarTabelaGargalos() {
+            const searchTerm = document.getElementById('gargalosSearchInput').value.toLowerCase();
+            const etapaFilter = document.getElementById('gargalosEtapaFilter').value;
+
+            const filteredData = gargalosTableData.filter(p => {
+                const matchesSearch = !searchTerm ||
+                    (p.nome_completo && p.nome_completo.toLowerCase().includes(searchTerm)) ||
+                    (p.email && p.email.toLowerCase().includes(searchTerm));
+                const matchesEtapa = !etapaFilter || p.tipo === etapaFilter;
+                return matchesSearch && matchesEtapa;
+            });
+
+            renderGargalosTableRows(filteredData);
+        }
+
+        function enviarLembreteGargalo(email) {
+            // Placeholder para integração com sistema de notificações
+            alert(`Lembrete será enviado para: ${email}`);
+        }
+
+        function exportarGargalosCSV() {
+            if (gargalosTableData.length === 0) {
+                alert('Nenhum dado para exportar');
+                return;
+            }
+
+            const headers = ['Nome', 'Email', 'Gargalo', 'Capacity', 'Dias Parado'];
+            const rows = gargalosTableData.map(p => [
+                p.nome_completo || '',
+                p.email || '',
+                p.gargalo || '',
+                p.capacityNum || 0,
+                p.diasParado || 0
+            ]);
+
+            const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'gargalos-funil-' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
         }
 
         function abrirMariaChat() {
