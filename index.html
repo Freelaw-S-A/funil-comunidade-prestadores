@@ -5359,6 +5359,22 @@
                     ${p.whatsapp ? `<a href="https://wa.me/${p.whatsapp.replace(/\D/g, '')}" target="_blank" style="color: #22C55E; text-decoration: none;">💬 Abrir WhatsApp</a>` : ''}`;
             }
 
+            // LinkedIn
+            if (q.includes('linkedin')) {
+                if (p.linkedin) {
+                    const linkedinUrl = p.linkedin.startsWith('http') ? p.linkedin : `https://linkedin.com/in/${p.linkedin}`;
+                    return `💼 <strong>LinkedIn</strong><br><br>
+                        <a href="${linkedinUrl}" target="_blank" style="color: #0077B5; text-decoration: none; font-weight: 600;">
+                            🔗 Abrir perfil de ${p.nome.split(' ')[0]} no LinkedIn
+                        </a><br><br>
+                        <span style="font-size: 0.85em; color: #6B7280;">Clique para ver o perfil completo</span>`;
+                } else {
+                    return `💼 <strong>LinkedIn</strong><br><br>
+                        ⚠️ LinkedIn não informado para <strong>${p.nome.split(' ')[0]}</strong>.<br><br>
+                        <span style="font-size: 0.85em; color: #6B7280;">O prestador ainda não cadastrou seu perfil do LinkedIn.</span>`;
+                }
+            }
+
             // Atividade
             if (q.includes('ativo') || q.includes('trabalh') || q.includes('pegou') || q.includes('serviço')) {
                 const pegou = p.classificacao && p.classificacao.includes('Pegou');
@@ -5661,7 +5677,7 @@
             <button class="maria-suggestion" onclick="askMaria('Tier atual')">🏆 Tier</button>
             <button class="maria-suggestion" onclick="askMaria('Média 30 dias')">📈 Média</button>
             <button class="maria-suggestion" onclick="askMaria('Contato')">📞 Contato</button>
-            <button class="maria-suggestion" onclick="askMaria('Está ativo?')">✅ Ativo</button>
+            <button class="maria-suggestion" onclick="askMaria('LinkedIn')">💼 LinkedIn</button>
         </div>
 
         <div class="maria-input-area">
