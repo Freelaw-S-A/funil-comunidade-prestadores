@@ -2616,20 +2616,20 @@
                         </div>
                     </div>
 
-                    <!-- Capacity Perdida -->
+                    <!-- Aguardando Ação -->
                     <div class="kpi-card">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
                                 <svg fill="none" stroke="#D97706" viewBox="0 0 24 24" width="20" height="20">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
-                            <span style="font-size: 0.8rem; font-weight: 600; color: #D97706; background: #FEF3C7; padding: 2px 8px; border-radius: 12px;">Impacto</span>
+                            <span style="font-size: 0.8rem; font-weight: 600; color: #D97706; background: #FEF3C7; padding: 2px 8px; border-radius: 12px;">Urgente</span>
                         </div>
-                        <p style="color: #6B7280; font-size: 0.875rem; margin: 12px 0 4px 0;">Capacity Perdida</p>
+                        <p style="color: #6B7280; font-size: 0.875rem; margin: 12px 0 4px 0;">Aguardando Ação</p>
                         <div style="display: flex; align-items: baseline; gap: 4px;">
-                            <span id="gargalosCapacityPerdida" style="font-size: 2rem; font-weight: 700; color: #111827;">-</span>
-                            <span style="font-size: 0.9rem; font-weight: 500; color: #6B7280;">peças/dia</span>
+                            <span id="gargalosAguardandoAcao" style="font-size: 2rem; font-weight: 700; color: #111827;">-</span>
+                            <span style="font-size: 0.9rem; font-weight: 500; color: #6B7280;">há +7 dias</span>
                         </div>
                     </div>
 
@@ -2707,8 +2707,8 @@
                             <tr style="background: #F9FAFB; border-bottom: 1px solid #E5E7EB;">
                                 <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Nome</th>
                                 <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Email</th>
+                                <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Área</th>
                                 <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Gargalo</th>
-                                <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Capacity</th>
                                 <th style="text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Dias Parado</th>
                                 <th style="text-align: center; padding: 12px 24px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase;">Ação</th>
                             </tr>
@@ -4040,7 +4040,7 @@
         async function carregarGargalos() {
             try {
                 // Buscar todos os prestadores inscritos com seus dados
-                const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/prestadores_inscricoes?select=id,nome_completo,email,nota_prova_tecnica,pode_emitir_nota_fiscal,producao_media_diaria,prestador_verificado,created_at,disponibilidade_diaria_horas`, {
+                const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/prestadores_inscricoes?select=id,nome_completo,email,nota_prova_tecnica,pode_emitir_nota_fiscal,prestador_verificado,created_at,disponibilidade_diaria_horas,area_atuacao_principal`, {
                     headers: {
                         'apikey': SUPABASE_CONFIG.anonKey,
                         'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
@@ -4060,9 +4060,6 @@
                 const onboardingData = onbResponse.ok ? await onbResponse.json() : [];
                 const onboardingAprovados = new Set(onboardingData.filter(o => o.acertos === 5).map(o => o.email));
 
-                // Mapear capacity
-                const capacityValues = { '1–2': 1.5, '3–5': 4, '6–10': 8, '11–15': 13, 'mais-15': 20 };
-
                 // Calcular gargalos
                 const gargalos = {
                     naoFizeramProva: [],
@@ -4076,9 +4073,8 @@
                 const hoje = new Date();
 
                 prestadores.forEach(p => {
-                    const capacityNum = capacityValues[p.producao_media_diaria] || 0;
                     const diasParado = Math.floor((hoje - new Date(p.created_at)) / (1000 * 60 * 60 * 24));
-                    const baseInfo = { ...p, capacityNum, diasParado };
+                    const baseInfo = { ...p, diasParado, area: p.area_atuacao_principal || 'Não informada' };
 
                     // Não fizeram prova
                     if (p.nota_prova_tecnica === null) {
@@ -4110,10 +4106,10 @@
 
                 // Calcular totais
                 const totalBloqueados = gargalos.naoFizeramProva.length + gargalos.reprovaramProva.length + gargalos.naoEmitemNF.length;
-                const capacityPerdidaProva = gargalos.naoFizeramProva.reduce((sum, p) => sum + p.capacityNum, 0) +
-                                              gargalos.reprovaramProva.reduce((sum, p) => sum + p.capacityNum, 0);
-                const capacityPerdidaNF = gargalos.naoEmitemNF.reduce((sum, p) => sum + p.capacityNum, 0);
-                const capacityTotal = capacityPerdidaProva + capacityPerdidaNF;
+
+                // Contar quantos estão aguardando há mais de 7 dias
+                const todosGargalos = [...gargalos.naoFizeramProva, ...gargalos.reprovaramProva, ...gargalos.naoEmitemNF];
+                const aguardandoMais7Dias = todosGargalos.filter(p => p.diasParado > 7).length;
 
                 // Encontrar maior gargalo
                 const gargalosOrdenados = [
@@ -4130,24 +4126,24 @@
 
                 // Atualizar KPIs
                 document.getElementById('gargalosTotalBloqueados').textContent = totalBloqueados;
-                document.getElementById('gargalosCapacityPerdida').textContent = Math.round(capacityTotal);
+                document.getElementById('gargalosAguardandoAcao').textContent = aguardandoMais7Dias;
                 document.getElementById('gargalosMaiorGargalo').textContent = `${maiorGargalo.nome} (${maiorGargalo.qtd})`;
                 document.getElementById('gargalosConversaoPotencial').textContent = conversaoPotencial;
                 document.getElementById('gargalosTotalTrend').textContent = `${Math.round((totalBloqueados / totalInscritos) * 100)}% do total`;
 
                 // Gerar insight
-                const insight = gerarInsightGargalos(gargalos, capacityTotal, totalInscritos, maiorGargalo);
+                const insight = gerarInsightGargalos(gargalos, totalInscritos, maiorGargalo, aguardandoMais7Dias);
                 document.getElementById('gargalosInsightText').textContent = insight;
 
                 // Renderizar cards de gargalos
-                renderGargalosCards(gargalos, capacityValues);
+                renderGargalosCards(gargalos);
 
                 // Montar dados para tabela (todos os bloqueados)
                 gargalosTableData = [
                     ...gargalos.naoFizeramProva,
                     ...gargalos.reprovaramProva,
                     ...gargalos.naoEmitemNF
-                ].sort((a, b) => b.capacityNum - a.capacityNum);
+                ].sort((a, b) => b.diasParado - a.diasParado);
 
                 renderGargalosTableRows(gargalosTableData);
 
@@ -4157,33 +4153,42 @@
             }
         }
 
-        function gerarInsightGargalos(gargalos, capacityTotal, totalInscritos, maiorGargalo) {
+        function gerarInsightGargalos(gargalos, totalInscritos, maiorGargalo, aguardandoMais7Dias) {
             const naoFizeram = gargalos.naoFizeramProva.length;
             const reprovaram = gargalos.reprovaramProva.length;
             const semNF = gargalos.naoEmitemNF.length;
+            const totalBloqueados = naoFizeram + reprovaram + semNF;
+            const percBloqueados = Math.round((totalBloqueados / totalInscritos) * 100);
 
-            let insight = `Identificamos ${naoFizeram + reprovaram + semNF} pessoas bloqueadas no funil, representando uma perda potencial de ${Math.round(capacityTotal)} peças/dia. `;
+            let insight = `Identificamos ${totalBloqueados} candidatos bloqueados no funil (${percBloqueados}% do total de ${totalInscritos} inscritos). `;
+
+            if (aguardandoMais7Dias > 0) {
+                insight += `${aguardandoMais7Dias} estão parados há mais de 7 dias e precisam de ação urgente. `;
+            }
 
             if (maiorGargalo.nome === 'Prova Técnica') {
                 insight += `O maior gargalo é a Prova Técnica: ${naoFizeram} inscritos não fizeram a prova e ${reprovaram} reprovaram. `;
                 insight += `Recomendação: Enviar lembretes automáticos e revisar o conteúdo da prova para melhorar a taxa de aprovação.`;
             } else if (maiorGargalo.nome === 'Nota Fiscal') {
-                insight += `${semNF} prestadores não conseguem emitir NF, impedindo sua ativação completa. `;
-                insight += `Recomendação: Oferecer parceria com contabilidade ou guia de MEI para esses prestadores.`;
+                insight += `${semNF} candidatos não conseguem emitir NF, impedindo sua ativação completa. `;
+                insight += `Recomendação: Oferecer parceria com contabilidade ou guia de MEI para esses candidatos.`;
             } else if (maiorGargalo.nome === 'Onboarding') {
                 insight += `${gargalos.aguardandoOnboarding.length} pessoas passaram na prova mas não completaram o onboarding. `;
                 insight += `Recomendação: Simplificar o processo ou enviar lembretes personalizados.`;
             } else {
-                insight += `${gargalos.pendentesAdmin.length} prestadores aguardam verificação manual do admin. `;
-                insight += `Recomendação: Priorizar a verificação para liberar capacity represada.`;
+                insight += `${gargalos.pendentesAdmin.length} candidatos aguardam verificação manual do admin. `;
+                insight += `Recomendação: Priorizar a verificação para liberar candidatos qualificados.`;
             }
 
             return insight;
         }
 
-        function renderGargalosCards(gargalos, capacityValues) {
+        function renderGargalosCards(gargalos) {
             const grid = document.getElementById('gargalosCardsGrid');
             if (!grid) return;
+
+            // Calcular média de dias parados por categoria
+            const calcMediaDias = (arr) => arr.length > 0 ? Math.round(arr.reduce((s, p) => s + p.diasParado, 0) / arr.length) : 0;
 
             const cards = [
                 {
@@ -4192,8 +4197,8 @@
                     cor: '#EF4444',
                     bgCor: '#FEE2E2',
                     items: [
-                        { label: 'Não fizeram prova', qtd: gargalos.naoFizeramProva.length, capacity: gargalos.naoFizeramProva.reduce((s, p) => s + p.capacityNum, 0) },
-                        { label: 'Reprovaram (<7)', qtd: gargalos.reprovaramProva.length, capacity: gargalos.reprovaramProva.reduce((s, p) => s + p.capacityNum, 0) }
+                        { label: 'Não fizeram prova', qtd: gargalos.naoFizeramProva.length, mediaDias: calcMediaDias(gargalos.naoFizeramProva) },
+                        { label: 'Reprovaram (<7)', qtd: gargalos.reprovaramProva.length, mediaDias: calcMediaDias(gargalos.reprovaramProva) }
                     ]
                 },
                 {
@@ -4202,7 +4207,7 @@
                     cor: '#F59E0B',
                     bgCor: '#FEF3C7',
                     items: [
-                        { label: 'Aguardando onboarding', qtd: gargalos.aguardandoOnboarding.length, capacity: gargalos.aguardandoOnboarding.reduce((s, p) => s + p.capacityNum, 0) }
+                        { label: 'Aguardando onboarding', qtd: gargalos.aguardandoOnboarding.length, mediaDias: calcMediaDias(gargalos.aguardandoOnboarding) }
                     ]
                 },
                 {
@@ -4211,7 +4216,7 @@
                     cor: '#8B5CF6',
                     bgCor: '#F3E8FF',
                     items: [
-                        { label: 'Não emitem NF', qtd: gargalos.naoEmitemNF.length, capacity: gargalos.naoEmitemNF.reduce((s, p) => s + p.capacityNum, 0) }
+                        { label: 'Não emitem NF', qtd: gargalos.naoEmitemNF.length, mediaDias: calcMediaDias(gargalos.naoEmitemNF) }
                     ]
                 },
                 {
@@ -4220,14 +4225,13 @@
                     cor: '#3B82F6',
                     bgCor: '#DBEAFE',
                     items: [
-                        { label: 'Pendentes marcação', qtd: gargalos.pendentesAdmin.length, capacity: gargalos.pendentesAdmin.reduce((s, p) => s + p.capacityNum, 0) }
+                        { label: 'Pendentes marcação', qtd: gargalos.pendentesAdmin.length, mediaDias: calcMediaDias(gargalos.pendentesAdmin) }
                     ]
                 }
             ];
 
             grid.innerHTML = cards.map(card => {
                 const totalQtd = card.items.reduce((s, i) => s + i.qtd, 0);
-                const totalCapacity = card.items.reduce((s, i) => s + i.capacity, 0);
 
                 return `
                     <div style="background: white; border-radius: 16px; border: 1px solid #E5E7EB; padding: 20px; position: relative; overflow: hidden;">
@@ -4239,12 +4243,11 @@
                                 </div>
                                 <div>
                                     <h4 style="margin: 0; font-size: 1rem; font-weight: 600; color: #111827;">${card.titulo}</h4>
-                                    <span style="font-size: 0.75rem; color: #6B7280;">${totalQtd} pessoas</span>
                                 </div>
                             </div>
                             <div style="text-align: right;">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: ${card.cor};">${Math.round(totalCapacity)}</div>
-                                <div style="font-size: 0.7rem; color: #6B7280;">peças/dia perdidas</div>
+                                <div style="font-size: 1.75rem; font-weight: 700; color: ${card.cor};">${totalQtd}</div>
+                                <div style="font-size: 0.75rem; color: #6B7280;">candidatos</div>
                             </div>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -4253,7 +4256,7 @@
                                     <span style="font-size: 0.875rem; color: #374151;">${item.label}</span>
                                     <div style="display: flex; align-items: center; gap: 12px;">
                                         <span style="font-size: 0.875rem; font-weight: 600; color: #111827;">${item.qtd}</span>
-                                        <span style="font-size: 0.75rem; color: #6B7280; background: #E5E7EB; padding: 2px 6px; border-radius: 4px;">${Math.round(item.capacity)} p/dia</span>
+                                        <span style="font-size: 0.75rem; color: #6B7280; background: #E5E7EB; padding: 2px 6px; border-radius: 4px;">~${item.mediaDias} dias</span>
                                     </div>
                                 </div>
                             `).join('')}
@@ -4287,22 +4290,22 @@
                     'admin': '#DBEAFE'
                 }[p.tipo] || '#F3F4F6';
 
+                // Truncar área se muito longa
+                const areaDisplay = p.area && p.area.length > 20 ? p.area.substring(0, 18) + '...' : (p.area || '-');
+
                 return `
                     <tr style="border-bottom: 1px solid #E5E7EB;">
                         <td style="padding: 12px 24px;">
                             <div style="font-weight: 500; color: #111827;">${p.nome_completo || 'N/A'}</div>
                         </td>
                         <td style="padding: 12px 24px; color: #6B7280; font-size: 0.875rem;">${p.email || '-'}</td>
+                        <td style="padding: 12px 24px; color: #6B7280; font-size: 0.875rem;" title="${p.area || ''}">${areaDisplay}</td>
                         <td style="padding: 12px 24px;">
                             <span style="background: ${gargaloBg}; color: ${gargaloCor}; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
                                 ${p.gargalo}
                             </span>
                         </td>
-                        <td style="padding: 12px 24px;">
-                            <span style="font-weight: 600; color: #111827;">${p.capacityNum}</span>
-                            <span style="color: #6B7280; font-size: 0.75rem;"> p/dia</span>
-                        </td>
-                        <td style="padding: 12px 24px; color: #6B7280;">${p.diasParado} dias</td>
+                        <td style="padding: 12px 24px; color: ${p.diasParado > 7 ? '#DC2626' : '#6B7280'}; font-weight: ${p.diasParado > 7 ? '600' : '400'};">${p.diasParado} dias</td>
                         <td style="padding: 12px 24px; text-align: center;">
                             <button onclick="enviarLembreteGargalo('${p.email}')" style="background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: 500;">
                                 Enviar Lembrete
@@ -4339,12 +4342,12 @@
                 return;
             }
 
-            const headers = ['Nome', 'Email', 'Gargalo', 'Capacity', 'Dias Parado'];
+            const headers = ['Nome', 'Email', 'Área', 'Gargalo', 'Dias Parado'];
             const rows = gargalosTableData.map(p => [
-                p.nome_completo || '',
+                (p.nome_completo || '').replace(/,/g, ' '),
                 p.email || '',
+                (p.area || '').replace(/,/g, ' '),
                 p.gargalo || '',
-                p.capacityNum || 0,
                 p.diasParado || 0
             ]);
 
