@@ -4095,25 +4095,10 @@
                     'Direito Tributário': 2
                 };
 
-                let demandaPorArea = {};
-
-                // Tentar buscar dados atualizados da API do Metabase
-                try {
-                    const demandaResponse = await fetch('https://metrics.freelaw.work/public/question/25ebf5bd-fc0f-4831-94e0-cf5de8a24639.json');
-                    if (demandaResponse.ok) {
-                        const demandaJson = await demandaResponse.json();
-                        const demandaData = demandaJson.data?.rows || [];
-                        demandaData.forEach(row => {
-                            demandaPorArea[row[0]] = row[1];
-                        });
-                        console.log('%c📊 DEMANDA - Metabase API (live)', 'background: #10B981; color: white; padding: 2px 6px; border-radius: 4px;', demandaPorArea);
-                    } else {
-                        throw new Error('API retornou erro');
-                    }
-                } catch (apiError) {
-                    console.log('%c📊 DEMANDA - Usando fallback (CORS)', 'background: #F59E0B; color: white; padding: 2px 6px; border-radius: 4px;', demandaFallback);
-                    demandaPorArea = demandaFallback;
-                }
+                // Usar dados de fallback diretamente (API bloqueada por CORS no GitHub Pages)
+                // Para atualizar dados, editar o fallback manualmente com base na query do Metabase
+                const demandaPorArea = demandaFallback;
+                console.log('%c📊 DEMANDA - Usando dados de referência', 'background: #3B82F6; color: white; padding: 2px 6px; border-radius: 4px;', demandaPorArea);
 
                 // Mapeamento de nomes de áreas (Supabase usa "Direito X", capacity usa "Direito X")
                 const mapeamentoAreas = {
