@@ -2540,6 +2540,47 @@
                     </div>
                 </div>
 
+                <!-- Comparativo Capacity vs Demanda -->
+                <div style="background: white; border-radius: 12px; border: 1px solid #E5E7EB; padding: 24px; margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0 0 4px 0;">Capacity vs Demanda por Área</h3>
+                            <p style="font-size: 0.8rem; color: #6B7280; margin: 0;">Comparativo entre capacity disponível e serviços delegados/dia</p>
+                        </div>
+                        <div id="comparativoResumo" style="display: flex; gap: 16px;">
+                            <div style="text-align: center; padding: 8px 16px; background: #F0FDF4; border-radius: 8px;">
+                                <div style="font-size: 0.7rem; color: #16A34A; font-weight: 600; text-transform: uppercase;">Capacity Total</div>
+                                <div id="comparativoCapacityTotal" style="font-size: 1.25rem; font-weight: 700; color: #16A34A;">-</div>
+                            </div>
+                            <div style="text-align: center; padding: 8px 16px; background: #FEF3C7; border-radius: 8px;">
+                                <div style="font-size: 0.7rem; color: #D97706; font-weight: 600; text-transform: uppercase;">Demanda/Dia</div>
+                                <div id="comparativoDemandaTotal" style="font-size: 1.25rem; font-weight: 700; color: #D97706;">-</div>
+                            </div>
+                            <div style="text-align: center; padding: 8px 16px; background: #EFF6FF; border-radius: 8px;">
+                                <div style="font-size: 0.7rem; color: #2563EB; font-weight: 600; text-transform: uppercase;">Saldo</div>
+                                <div id="comparativoSaldoTotal" style="font-size: 1.25rem; font-weight: 700; color: #2563EB;">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;" id="comparativoTable">
+                            <thead>
+                                <tr style="background: #F9FAFB;">
+                                    <th style="text-align: left; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Área</th>
+                                    <th style="text-align: center; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Capacity</th>
+                                    <th style="text-align: center; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Demanda/Dia</th>
+                                    <th style="text-align: center; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Saldo</th>
+                                    <th style="text-align: center; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Cobertura</th>
+                                    <th style="text-align: center; padding: 12px 16px; font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparativoTableBody">
+                                <tr><td colspan="6" style="text-align: center; padding: 40px; color: #6B7280;">Carregando comparativo...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Tabela de prestadores por capacity -->
                 <div style="background: white; border-radius: 12px; border: 1px solid #E5E7EB; overflow: hidden;">
                     <div style="padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center;">
@@ -3907,6 +3948,9 @@
                     </div>
                 `;
             }).join('');
+
+            // Carregar comparativo Capacity vs Demanda
+            carregarComparativoCapacityDemanda(areaData);
         }
 
         // Armazenar dados globalmente para filtro
@@ -4030,6 +4074,176 @@
         function exportarCapacityCSV() {
             // Implementar exportação CSV
             alert('Funcionalidade de exportação em desenvolvimento');
+        }
+
+        // ==========================================
+        // COMPARATIVO CAPACITY VS DEMANDA
+        // ==========================================
+        async function carregarComparativoCapacityDemanda(capacityPorArea) {
+            try {
+                // Buscar dados de demanda da API pública do Metabase
+                const demandaResponse = await fetch('https://metrics.freelaw.work/public/question/25ebf5bd-fc0f-4831-94e0-cf5de8a24639.json');
+
+                if (!demandaResponse.ok) throw new Error('Falha ao carregar demanda');
+
+                const demandaJson = await demandaResponse.json();
+                const demandaData = demandaJson.data?.rows || [];
+
+                // Mapear demanda por área (normalizar nomes)
+                const demandaPorArea = {};
+                demandaData.forEach(row => {
+                    const area = row[0]; // Nome da área
+                    const quantidade = row[1]; // Quantidade de serviços
+                    demandaPorArea[area] = quantidade;
+                });
+
+                console.log('%c📊 DEMANDA - Metabase API', 'background: #F59E0B; color: white; padding: 2px 6px; border-radius: 4px;', demandaPorArea);
+
+                // Mapeamento de nomes de áreas (capacity usa nomes simplificados)
+                const mapeamentoAreas = {
+                    'Civil': 'Direito Civil',
+                    'Previdenciário': 'Direito Previdenciário',
+                    'Trabalhista': 'Direito Trabalhista',
+                    'Consumidor': 'Direito do Consumidor',
+                    'Bancário': 'Direito Bancário',
+                    'Administrativo': 'Direito Administrativo',
+                    'Constitucional': 'Direito Constitucional',
+                    'Penal': 'Direito Penal',
+                    'Tributário': 'Direito Tributário',
+                    'Empresarial': 'Direito Empresarial',
+                    'Imobiliário': 'Direito Imobiliário',
+                    'Família': 'Direito de Família',
+                    'Ambiental': 'Direito Ambiental'
+                };
+
+                // Criar dados comparativos
+                const comparativo = [];
+                let totalCapacity = 0;
+                let totalDemanda = 0;
+
+                // Processar todas as áreas (união de capacity e demanda)
+                const todasAreas = new Set([
+                    ...Object.keys(capacityPorArea),
+                    ...Object.keys(demandaPorArea).map(a => {
+                        // Tentar encontrar versão simplificada
+                        for (const [simples, completo] of Object.entries(mapeamentoAreas)) {
+                            if (completo === a) return simples;
+                        }
+                        return a.replace('Direito ', '').replace('de ', '');
+                    })
+                ]);
+
+                todasAreas.forEach(areaSimples => {
+                    const areaCompleta = mapeamentoAreas[areaSimples] || `Direito ${areaSimples}`;
+                    const capacity = capacityPorArea[areaSimples]?.capacitySum || 0;
+                    const demanda = demandaPorArea[areaCompleta] || demandaPorArea[areaSimples] || 0;
+
+                    if (capacity > 0 || demanda > 0) {
+                        const saldo = capacity - demanda;
+                        const cobertura = demanda > 0 ? Math.round((capacity / demanda) * 100) : (capacity > 0 ? 999 : 0);
+
+                        comparativo.push({
+                            area: areaSimples,
+                            capacity: Math.round(capacity),
+                            demanda: demanda,
+                            saldo: Math.round(saldo),
+                            cobertura: cobertura
+                        });
+
+                        totalCapacity += capacity;
+                        totalDemanda += demanda;
+                    }
+                });
+
+                // Ordenar por demanda (maior primeiro)
+                comparativo.sort((a, b) => b.demanda - a.demanda);
+
+                // Atualizar resumo
+                document.getElementById('comparativoCapacityTotal').textContent = Math.round(totalCapacity);
+                document.getElementById('comparativoDemandaTotal').textContent = Math.round(totalDemanda);
+                const saldoTotal = Math.round(totalCapacity - totalDemanda);
+                const saldoEl = document.getElementById('comparativoSaldoTotal');
+                saldoEl.textContent = (saldoTotal >= 0 ? '+' : '') + saldoTotal;
+                saldoEl.style.color = saldoTotal >= 0 ? '#16A34A' : '#DC2626';
+                saldoEl.parentElement.style.background = saldoTotal >= 0 ? '#F0FDF4' : '#FEF2F2';
+
+                // Renderizar tabela
+                renderComparativoTable(comparativo);
+
+            } catch (error) {
+                console.error('[Comparativo] Erro:', error);
+                document.getElementById('comparativoTableBody').innerHTML = `
+                    <tr><td colspan="6" style="text-align: center; padding: 40px; color: #DC2626;">Erro ao carregar comparativo</td></tr>
+                `;
+            }
+        }
+
+        function renderComparativoTable(dados) {
+            const tbody = document.getElementById('comparativoTableBody');
+
+            if (dados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #6B7280;">Nenhum dado disponível</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = dados.map(item => {
+                // Determinar status
+                let status, statusBg, statusColor;
+                if (item.cobertura >= 150) {
+                    status = 'Superávit';
+                    statusBg = '#F0FDF4';
+                    statusColor = '#16A34A';
+                } else if (item.cobertura >= 100) {
+                    status = 'Adequado';
+                    statusBg = '#EFF6FF';
+                    statusColor = '#2563EB';
+                } else if (item.cobertura >= 70) {
+                    status = 'Atenção';
+                    statusBg = '#FEF3C7';
+                    statusColor = '#D97706';
+                } else {
+                    status = 'Crítico';
+                    statusBg = '#FEF2F2';
+                    statusColor = '#DC2626';
+                }
+
+                const saldoColor = item.saldo >= 0 ? '#16A34A' : '#DC2626';
+                const saldoPrefix = item.saldo >= 0 ? '+' : '';
+
+                // Barra de progresso visual
+                const barWidth = Math.min(item.cobertura, 200);
+                const barColor = item.cobertura >= 100 ? '#16A34A' : (item.cobertura >= 70 ? '#F59E0B' : '#DC2626');
+
+                return `
+                    <tr style="border-bottom: 1px solid #F3F4F6;">
+                        <td style="padding: 14px 16px;">
+                            <span style="font-weight: 600; color: #111827;">${item.area}</span>
+                        </td>
+                        <td style="text-align: center; padding: 14px 16px;">
+                            <span style="font-weight: 700; color: #16A34A; font-size: 1.1rem;">${item.capacity}</span>
+                            <span style="font-size: 0.75rem; color: #6B7280;">/dia</span>
+                        </td>
+                        <td style="text-align: center; padding: 14px 16px;">
+                            <span style="font-weight: 700; color: #D97706; font-size: 1.1rem;">${item.demanda}</span>
+                            <span style="font-size: 0.75rem; color: #6B7280;">/dia</span>
+                        </td>
+                        <td style="text-align: center; padding: 14px 16px;">
+                            <span style="font-weight: 700; color: ${saldoColor}; font-size: 1.1rem;">${saldoPrefix}${item.saldo}</span>
+                        </td>
+                        <td style="text-align: center; padding: 14px 16px;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                <span style="font-weight: 600; color: ${barColor};">${item.cobertura}%</span>
+                                <div style="width: 80px; height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden;">
+                                    <div style="width: ${barWidth / 2}%; height: 100%; background: ${barColor}; border-radius: 3px;"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="text-align: center; padding: 14px 16px;">
+                            <span style="padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; background: ${statusBg}; color: ${statusColor};">${status}</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         // ==========================================
