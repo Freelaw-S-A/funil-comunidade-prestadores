@@ -2940,6 +2940,43 @@
         };
 
         // ==========================================
+        // FONTE DA VERDADE: prestadores_ativos_inscricoes
+        // ==========================================
+        let DADOS_CENTRALIZADOS = {
+            ativos: null,           // Array com todos os ativos
+            totalAtivos: 0,         // Número total de ativos
+            carregado: false        // Flag de carregamento
+        };
+
+        // Função para carregar fonte da verdade UMA vez
+        async function carregarFonteDaVerdade() {
+            if (DADOS_CENTRALIZADOS.carregado) {
+                return DADOS_CENTRALIZADOS;
+            }
+
+            try {
+                const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/prestadores_ativos_inscricoes?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_CONFIG.anonKey,
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    DADOS_CENTRALIZADOS.ativos = data;
+                    DADOS_CENTRALIZADOS.totalAtivos = data.length;
+                    DADOS_CENTRALIZADOS.carregado = true;
+                    console.log(`%c📊 FONTE DA VERDADE: ${data.length} ativos`, 'background: #7C3AED; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;');
+                    return DADOS_CENTRALIZADOS;
+                }
+            } catch (error) {
+                console.error('[Fonte da Verdade] Erro:', error);
+            }
+            return DADOS_CENTRALIZADOS;
+        }
+
+        // ==========================================
         // FETCH DATA (API Supabase - sem CORS!)
         // ==========================================
 
@@ -3189,14 +3226,20 @@
             mostrarLoading();
 
             try {
-                const [areaRows, funilRows, ativosRows] = await Promise.all([
+                // Carregar fonte da verdade PRIMEIRO
+                const fonteDaVerdade = await carregarFonteDaVerdade();
+
+                const [areaRows, funilRows] = await Promise.all([
                     fetchMetabaseData(METABASE_CONFIG.queryAreaId),
-                    fetchMetabaseData(METABASE_CONFIG.queryFunilMasterId),
-                    fetchMetabaseData(METABASE_CONFIG.queryAtivosId)
+                    fetchMetabaseData(METABASE_CONFIG.queryFunilMasterId)
                 ]);
 
-                let areaData, ativosCount, totalInscricoes, totalAprovados, totalAtivos, totalPendentes, totalBloqueados;
+                let areaData, totalInscricoes, totalAprovados, totalPendentes, totalBloqueados;
                 let totalDesativados, totalDesistentes, totalSaidaVol;
+
+                // Ativos SEMPRE vem da fonte da verdade
+                const ativosCount = fonteDaVerdade.totalAtivos;
+                const totalAtivos = fonteDaVerdade.totalAtivos;
 
                 // Só usa fallback se API realmente falhar
                 const usarDadosReais = areaRows && areaRows.length > 0 && funilRows && funilRows.length > 0;
@@ -3207,36 +3250,31 @@
                     areaData = processAreaData(areaRows);
                     totalInscricoes = funilRows.length;
                     totalAprovados = funilRows.filter(r => r[12] === true).length;
-                    ativosCount = funilRows.filter(r => r[13] === true).length;
                     totalDesativados = funilRows.filter(r => r[14] === true).length;
                     totalDesistentes = funilRows.filter(r => r[15] === true).length;
                     totalBloqueados = funilRows.filter(r => r[16] === true).length;
                     totalPendentes = funilRows.filter(r => r[17] === true).length;
                     totalSaidaVol = funilRows.filter(r => r[18] === true).length;
-                    totalAtivos = ativosRows ? ativosRows.length : ativosCount;
-                    console.log(`   Funil: ${funilRows.length} registros | Área: ${areaRows.length} registros | Ativos: ${ativosRows?.length || 0} registros`);
+                    console.log(`   Funil: ${funilRows.length} registros | Área: ${areaRows.length} registros | Ativos (fonte): ${ativosCount} registros`);
                 } else {
-                    console.warn('%c⚠️ FALLBACK ATIVO (dados estáticos)', 'background: #F59E0B; color: black; padding: 4px 8px; border-radius: 4px; font-weight: bold;');
-                    console.warn('   Motivo: API Supabase não retornou dados');
-                    updateDataSourceBadge(false);
+                    console.warn('%c⚠️ FALLBACK PARCIAL (área/funil)', 'background: #F59E0B; color: black; padding: 4px 8px; border-radius: 4px; font-weight: bold;');
+                    updateDataSourceBadge(fonteDaVerdade.carregado);
                     areaData = FALLBACK_DATA;
-                    ativosCount = 168;
-                    totalInscricoes = 348;
-                    totalAprovados = 212;
-                    totalAtivos = 168;
-                    totalPendentes = 36;
-                    totalBloqueados = 18;
-                    totalDesativados = 17;
-                    totalDesistentes = 5;
-                    totalSaidaVol = 6;
+                    totalInscricoes = funilRows?.length || 0;
+                    totalAprovados = 0;
+                    totalPendentes = 0;
+                    totalBloqueados = 0;
+                    totalDesativados = 0;
+                    totalDesistentes = 0;
+                    totalSaidaVol = 0;
                 }
 
                 const totais = calcularTotais(areaData);
 
-                // Sobrescrever com dados consolidados
+                // Sobrescrever com dados consolidados - ATIVOS SEMPRE DA FONTE DA VERDADE
                 totais.inscritos = totalInscricoes;
                 totais.aprovProva = totalAprovados;
-                totais.ativados = ativosCount;
+                totais.ativados = ativosCount;  // FONTE DA VERDADE
                 totais.pendentes = totalPendentes;
                 totais.bloqueados = totalBloqueados;
                 totais.desativados = totalDesativados;
@@ -3247,18 +3285,21 @@
                 totais.churnTotal = (totais.bloqueados || 0) + (totais.desativados || 0) +
                                    (totais.desistentes || 0) + (totais.saidaVol || 0);
 
-                console.log(`   Resumo: ${totalInscricoes} inscrições, ${totalAprovados} aprovados, ${totalAtivos} ativos`);
+                console.log(`   Resumo: ${totalInscricoes} inscrições, ${totalAprovados} aprovados, ${totalAtivos} ativos (fonte da verdade)`);
 
                 renderDashboard(totais, ativosCount);
 
             } catch (error) {
                 console.error('Erro ao carregar dados:', error);
+                // Mesmo em erro, tenta usar fonte da verdade para ativos
+                const fonteDaVerdade = await carregarFonteDaVerdade();
+                const ativosCount = fonteDaVerdade.totalAtivos || 0;
                 const totais = calcularTotais(FALLBACK_DATA);
-                totais.inscritos = 348;
-                totais.aprovProva = 212;
-                totais.ativados = 168;
-                totais.churnTotal = 46;
-                renderDashboard(totais, 168);
+                totais.inscritos = 0;
+                totais.aprovProva = 0;
+                totais.ativados = ativosCount;
+                totais.churnTotal = 0;
+                renderDashboard(totais, ativosCount);
             }
         }
 
@@ -3792,9 +3833,12 @@
                     const prestadoresComCapacity = Object.values(counts).reduce((a, b) => a + b, 0);
                     const mediaProducao = prestadoresComCapacity > 0 ? (totalCapacity / prestadoresComCapacity).toFixed(1) : 0;
 
+                    // Total de prestadores ativos = data.length (fonte da verdade)
+                    const totalPrestadoresAtivos = data.length;
+
                     // Atualizar KPI Cards
                     document.getElementById('capacityTotal').textContent = Math.round(totalCapacity);
-                    document.getElementById('capacityPrestadoresAtivos').textContent = prestadoresComCapacity;
+                    document.getElementById('capacityPrestadoresAtivos').textContent = totalPrestadoresAtivos;  // FONTE DA VERDADE
                     document.getElementById('capacityMediaProducao').textContent = mediaProducao;
                     document.getElementById('capacityHighPerformers').textContent = Math.round(highPerformersCapacity);
 
@@ -3804,7 +3848,7 @@
                     document.getElementById('capacityMediaTrend').textContent = '~ 0%';
 
                     // Gerar insight da MarIA
-                    const insightText = gerarInsightCapacity(counts, totalCapacity, prestadoresComCapacity, highPerformersCapacity, mediaProducao);
+                    const insightText = gerarInsightCapacity(counts, totalCapacity, totalPrestadoresAtivos, highPerformersCapacity, mediaProducao);
                     document.getElementById('capacityInsightText').textContent = `"${insightText}"`;
 
                     // Renderizar Capacity por Área
