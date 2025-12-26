@@ -5681,9 +5681,10 @@
 
         async function carregarPendentes() {
             const tbody = document.getElementById('pendentesTableBody');
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">Carregando...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#999;">Carregando...</td></tr>';
 
             try {
+                // Buscar pendentes
                 const response = await fetch(
                     SUPABASE_CONFIG.url + '/rest/v1/prestadores_pendentes_marcacao_admin?select=*&order=dias_desde_aprovacao.desc',
                     {
@@ -5698,6 +5699,34 @@
 
                 pendentesData = await response.json();
 
+                // Buscar LinkedIn da tabela de inscrições
+                const emails = pendentesData.map(p => p.email).filter(Boolean);
+                if (emails.length > 0) {
+                    const linkedinResponse = await fetch(
+                        SUPABASE_CONFIG.url + '/rest/v1/prestadores_inscricoes?select=email,linkedin_url&email=in.(' + emails.map(e => '"' + e + '"').join(',') + ')',
+                        {
+                            headers: {
+                                'apikey': SUPABASE_CONFIG.anonKey,
+                                'Authorization': 'Bearer ' + SUPABASE_CONFIG.anonKey
+                            }
+                        }
+                    );
+
+                    if (linkedinResponse.ok) {
+                        const linkedinData = await linkedinResponse.json();
+                        const linkedinMap = {};
+                        linkedinData.forEach(item => {
+                            if (item.linkedin_url) linkedinMap[item.email.toLowerCase()] = item.linkedin_url;
+                        });
+
+                        // Merge LinkedIn URLs
+                        pendentesData = pendentesData.map(p => ({
+                            ...p,
+                            linkedin_url: p.linkedin_url || linkedinMap[p.email?.toLowerCase()] || null
+                        }));
+                    }
+                }
+
                 // Atualizar contador no sidebar
                 const countEl = document.getElementById('pendentesCount');
                 if (countEl) countEl.textContent = pendentesData.length;
@@ -5709,7 +5738,7 @@
 
             } catch (error) {
                 console.error('Erro:', error);
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#EF4444;">Erro ao carregar dados</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#EF4444;">Erro ao carregar dados</td></tr>';
             }
         }
 
