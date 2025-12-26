@@ -2691,16 +2691,18 @@
                     <table class="data-table" id="pendentesTable">
                         <thead>
                             <tr>
-                                <th>Nome</th>
-                                <th>Email</th>
+                                <th>NOME</th>
+                                <th>EMAIL</th>
                                 <th>OAB</th>
-                                <th>Nota Prova</th>
-                                <th>Dias Aguardando</th>
-                                <th>Ações</th>
+                                <th>NOTA PROVA</th>
+                                <th>DIAS AGUARDANDO</th>
+                                <th>WHATSAPP</th>
+                                <th>LINKEDIN</th>
+                                <th>AÇÕES</th>
                             </tr>
                         </thead>
                         <tbody id="pendentesTableBody">
-                            <tr><td colspan="6" style="text-align:center;color:#999;">Carregando...</td></tr>
+                            <tr><td colspan="8" style="text-align:center;color:#999;">Carregando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -5715,17 +5717,14 @@
             const tbody = document.getElementById('pendentesTableBody');
 
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">Nenhum prestador aguardando análise</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#999;">Nenhum prestador aguardando análise</td></tr>';
                 return;
             }
 
             tbody.innerHTML = data.map(p => `
                 <tr>
-                    <td>
-                        <div style="font-weight: 500;">${p.nome_completo || '-'}</div>
-                        ${p.linkedin_url ? `<a href="${p.linkedin_url}" target="_blank" style="color: #3B82F6; font-size: 0.8rem;">LinkedIn</a>` : ''}
-                    </td>
-                    <td>${p.email || '-'}</td>
+                    <td style="font-weight: 500;">${p.nome_completo || '-'}</td>
+                    <td><a href="mailto:${p.email}" style="color: #3B82F6;">${p.email || '-'}</a></td>
                     <td>${p.oab_numero_uf || '-'}</td>
                     <td>
                         <span style="background: ${p.nota_prova_tecnica >= 7 ? '#DEF7EC' : '#FDE8E8'};
@@ -5740,6 +5739,12 @@
                                      padding: 2px 8px; border-radius: 4px; font-weight: 500;">
                             ${p.dias_desde_aprovacao || 0} dias
                         </span>
+                    </td>
+                    <td>
+                        ${p.telefone_whatsapp ? `<a href="https://wa.me/${p.telefone_whatsapp.replace(/\D/g, '')}" target="_blank" style="color: #22C55E; font-weight: 500;">${p.telefone_whatsapp}</a>` : '-'}
+                    </td>
+                    <td>
+                        ${p.linkedin_url ? `<a href="${p.linkedin_url}" target="_blank" style="color: #0077B5; font-weight: 500;">Perfil</a>` : '-'}
                     </td>
                     <td>
                         <a href="https://admin.freelaw.work/prestadores?email=${encodeURIComponent(p.email)}"
