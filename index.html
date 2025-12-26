@@ -2688,17 +2688,17 @@
                                style="padding: 8px 12px; border: 1px solid #E5E7EB; border-radius: 8px; width: 300px;"
                                oninput="filtrarPendentes()">
                     </div>
-                    <table class="data-table" id="pendentesTable" style="width: 100%; border-collapse: collapse;">
+                    <table class="areas-table" id="pendentesTable">
                         <thead>
-                            <tr style="border-bottom: 2px solid #E5E7EB;">
-                                <th style="padding: 12px; text-align: left; font-weight: 600; color: #6B7280; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">NOME</th>
-                                <th style="padding: 12px; text-align: left; font-weight: 600; color: #6B7280; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">EMAIL</th>
-                                <th style="padding: 12px; text-align: left; font-weight: 600; color: #6B7280; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">OAB</th>
-                                <th style="padding: 12px; text-align: center; font-weight: 600; color: #6B7280; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">NOTA PROVA</th>
-                                <th style="padding: 12px; text-align: center; font-weight: 600; color: #6B7280; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">DIAS AGUARDANDO</th>
-                                <th style="padding: 12px; text-align: left; font-weight: 600; color: #6B7280; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">WHATSAPP</th>
-                                <th style="padding: 12px; text-align: left; font-weight: 600; color: #6B7280; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">LINKEDIN</th>
-                                <th style="padding: 12px; text-align: left; font-weight: 600; color: #6B7280; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">AÇÕES</th>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>OAB</th>
+                                <th>Nota Prova</th>
+                                <th>Dias Aguardando</th>
+                                <th>WhatsApp</th>
+                                <th>LinkedIn</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody id="pendentesTableBody">
@@ -5686,7 +5686,7 @@
             try {
                 // Buscar pendentes
                 const response = await fetch(
-                    SUPABASE_CONFIG.url + '/rest/v1/prestadores_pendentes_marcacao_admin?select=*&order=dias_desde_aprovacao.desc',
+                    SUPABASE_CONFIG.url + '/rest/v1/prestadores_pendentes_marcacao_admin?select=*&order=nome_completo.asc',
                     {
                         headers: {
                             'apikey': SUPABASE_CONFIG.anonKey,
@@ -5746,34 +5746,30 @@
             const tbody = document.getElementById('pendentesTableBody');
 
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#999;padding:20px;">Nenhum prestador aguardando análise</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#999;">Nenhum prestador aguardando análise</td></tr>';
                 return;
             }
 
             tbody.innerHTML = data.map(p => `
-                <tr style="border-bottom: 1px solid #F3F4F6;">
-                    <td style="padding: 16px 12px; font-weight: 500; color: #1F2937;">${p.nome_completo || '-'}</td>
-                    <td style="padding: 16px 12px;"><a href="mailto:${p.email}" style="color: #3B82F6; text-decoration: none;">${p.email || '-'}</a></td>
-                    <td style="padding: 16px 12px; color: #6B7280;">${p.oab_numero_uf || '-'}</td>
-                    <td style="padding: 16px 12px; text-align: center;">
+                <tr>
+                    <td>${p.nome_completo || '-'}</td>
+                    <td><a href="mailto:${p.email}" style="color: #3B82F6; text-decoration: none;">${p.email || '-'}</a></td>
+                    <td>${p.oab_numero_uf || '-'}</td>
+                    <td>
                         <span style="background: ${p.nota_prova_tecnica >= 7 ? '#DEF7EC' : '#FDE8E8'};
                                      color: ${p.nota_prova_tecnica >= 7 ? '#03543F' : '#9B1C1C'};
-                                     padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 0.85rem;">
+                                     padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">
                             ${p.nota_prova_tecnica?.toFixed(1) || '-'}
                         </span>
                     </td>
-                    <td style="padding: 16px 12px; text-align: center; color: #6B7280;">${p.dias_desde_aprovacao || 0} dias</td>
-                    <td style="padding: 16px 12px;">
-                        ${p.telefone_whatsapp ? `<a href="https://wa.me/${p.telefone_whatsapp.replace(/\D/g, '')}" target="_blank" style="color: #22C55E; text-decoration: none; font-weight: 500;">${p.telefone_whatsapp}</a>` : '<span style="color:#9CA3AF;">-</span>'}
-                    </td>
-                    <td style="padding: 16px 12px;">
-                        ${p.linkedin_url ? `<a href="${p.linkedin_url}" target="_blank" style="color: #6B7280; text-decoration: none;">Perfil</a>` : '<span style="color:#9CA3AF;">-</span>'}
-                    </td>
-                    <td style="padding: 16px 12px;">
+                    <td>${p.dias_desde_aprovacao || 0} dias</td>
+                    <td>${p.telefone_whatsapp ? `<a href="https://wa.me/${p.telefone_whatsapp.replace(/\D/g, '')}" target="_blank" style="color: #22C55E; text-decoration: none;">${p.telefone_whatsapp}</a>` : '-'}</td>
+                    <td>${p.linkedin_url ? `<a href="${p.linkedin_url}" target="_blank" style="color: #6B7280; text-decoration: none;">Perfil</a>` : '-'}</td>
+                    <td>
                         <a href="https://admin.freelaw.work/prestadores?email=${encodeURIComponent(p.email)}"
                            target="_blank"
-                           style="background: #1F2937; color: white; padding: 8px 16px; border-radius: 6px;
-                                  text-decoration: none; font-size: 0.85rem; display: inline-block; font-weight: 500;">
+                           style="background: #1F2937; color: white; padding: 6px 12px; border-radius: 6px;
+                                  text-decoration: none; font-size: 0.8rem; display: inline-block;">
                             Ver no Admin
                         </a>
                     </td>
