@@ -5766,7 +5766,7 @@
                     <td>${p.telefone_whatsapp ? `<a href="https://wa.me/${p.telefone_whatsapp.replace(/\D/g, '')}" target="_blank" style="color: #22C55E; text-decoration: none;">${p.telefone_whatsapp}</a>` : '-'}</td>
                     <td>${p.linkedin_url ? `<a href="${p.linkedin_url}" target="_blank" style="color: #6B7280; text-decoration: none;">Perfil</a>` : '-'}</td>
                     <td>
-                        <a href="https://admin.freelaw.work/prestadores?email=${encodeURIComponent(p.email)}"
+                        <a href="https://admin.freelaw.work/admin/providers/provider/?q=${encodeURIComponent(p.email)}"
                            target="_blank"
                            style="background: #1F2937; color: white; padding: 6px 12px; border-radius: 6px;
                                   text-decoration: none; font-size: 0.8rem; display: inline-block;">
