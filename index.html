@@ -1764,6 +1764,28 @@
             </div>
 
             <div class="nav-section">
+                <div class="nav-section-title">GEST�O</div>
+                <button class="nav-item" data-section="pendentes" onclick="navigateTo('pendentes')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Aguardando An�lise</span>
+                    <span id="pendentesCount" style="background: #EF4444; color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600;">...</span>
+                </button>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">GESTÃO</div>
+                <button class="nav-item" data-section="pendentes" onclick="navigateTo('pendentes')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Aguardando Análise</span>
+                    <span id="pendentesCount" style="background: #EF4444; color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600;">...</span>
+                </button>
+            </div>
+
+            <div class="nav-section">
                 <div class="nav-section-title">ASSISTENTE IA</div>
                 <button class="nav-item maria" onclick="toggleMariaChat()">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2663,6 +2685,37 @@
                     <div class="table-results-info" id="perfResultsInfo"></div>
                 </div>
             </section>
+            <!-- SEÇÃO: PRESTADORES AGUARDANDO ANÁLISE -->
+            <section id="sectionPendentes" class="page-section">
+                <div class="section-header" style="margin-bottom: 1.5rem;">
+                    <h1 class="page-title">Prestadores Aguardando Análise</h1>
+                    <p class="page-subtitle">Prestadores aprovados que ainda não foram verificados no admin</p>
+                </div>
+
+                <div class="table-container" style="margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div class="table-results-info" id="pendentesResultsInfo"></div>
+                        <input type="text" id="pendentesSearch" placeholder="Buscar por nome, email ou OAB..." 
+                               style="padding: 8px 12px; border: 1px solid #E5E7EB; border-radius: 8px; width: 300px;"
+                               oninput="filtrarPendentes()">
+                    </div>
+                    <table class="data-table" id="pendentesTable">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>OAB</th>
+                                <th>Nota Prova</th>
+                                <th>Dias Aguardando</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendentesTableBody">
+                            <tr><td colspan="6" style="text-align:center;color:#999;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -2710,6 +2763,9 @@
             } else if (section === 'gargalos') {
                 targetSection = document.getElementById('sectionGargalos');
                 setTimeout(() => carregarGargalos(), 100);
+            } else if (section === 'pendentes') {
+                targetSection = document.getElementById('sectionPendentes');
+                setTimeout(() => carregarPendentes(), 100);
             }
 
             if (targetSection) {
@@ -5626,7 +5682,125 @@
             link.click();
         }
 
+        
+        // ==========================================
+        // PRESTADORES AGUARDANDO ANÁLISE
+        // ==========================================
+        let pendentesData = [];
+
+        async function carregarPendentes() {
+            const tbody = document.getElementById('pendentesTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">Carregando...</td></tr>';
+
+            try {
+                const response = await fetch(
+                    SUPABASE_CONFIG.url + '/rest/v1/prestadores_pendentes_marcacao_admin?select=*&order=dias_desde_aprovacao.desc',
+                    {
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.anonKey,
+                            'Authorization': 'Bearer ' + SUPABASE_CONFIG.anonKey
+                        }
+                    }
+                );
+
+                if (!response.ok) throw new Error('Erro ao carregar dados');
+
+                pendentesData = await response.json();
+
+                // Atualizar contador no sidebar
+                const countEl = document.getElementById('pendentesCount');
+                if (countEl) countEl.textContent = pendentesData.length;
+
+                renderizarPendentes(pendentesData);
+
+                document.getElementById('pendentesResultsInfo').textContent =
+                    'Exibindo ' + pendentesData.length + ' prestadores aguardando análise';
+
+            } catch (error) {
+                console.error('Erro:', error);
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#EF4444;">Erro ao carregar dados</td></tr>';
+            }
+        }
+
+        function renderizarPendentes(data) {
+            const tbody = document.getElementById('pendentesTableBody');
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">Nenhum prestador aguardando análise</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(p => `
+                <tr>
+                    <td>
+                        <div style="font-weight: 500;">${p.nome_completo || '-'}</div>
+                        ${p.linkedin_url ? `<a href="${p.linkedin_url}" target="_blank" style="color: #3B82F6; font-size: 0.8rem;">LinkedIn</a>` : ''}
+                    </td>
+                    <td>${p.email || '-'}</td>
+                    <td>${p.oab_numero_uf || '-'}</td>
+                    <td>
+                        <span style="background: ${p.nota_prova_tecnica >= 7 ? '#DEF7EC' : '#FDE8E8'};
+                                     color: ${p.nota_prova_tecnica >= 7 ? '#03543F' : '#9B1C1C'};
+                                     padding: 2px 8px; border-radius: 4px; font-weight: 500;">
+                            ${p.nota_prova_tecnica?.toFixed(1) || '-'}
+                        </span>
+                    </td>
+                    <td>
+                        <span style="background: ${p.dias_desde_aprovacao > 7 ? '#FDE8E8' : '#FEF3C7'};
+                                     color: ${p.dias_desde_aprovacao > 7 ? '#9B1C1C' : '#92400E'};
+                                     padding: 2px 8px; border-radius: 4px; font-weight: 500;">
+                            ${p.dias_desde_aprovacao || 0} dias
+                        </span>
+                    </td>
+                    <td>
+                        <a href="https://admin.freelaw.work/prestadores?email=${encodeURIComponent(p.email)}"
+                           target="_blank"
+                           style="background: #3B82F6; color: white; padding: 6px 12px; border-radius: 6px;
+                                  text-decoration: none; font-size: 0.85rem; display: inline-block;">
+                            Ver no Admin
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filtrarPendentes() {
+            const search = document.getElementById('pendentesSearch').value.toLowerCase();
+
+            const filtered = pendentesData.filter(p => {
+                const nome = (p.nome_completo || '').toLowerCase();
+                const email = (p.email || '').toLowerCase();
+                const oab = (p.oab_numero_uf || '').toLowerCase();
+                return nome.includes(search) || email.includes(search) || oab.includes(search);
+            });
+
+            renderizarPendentes(filtered);
+            document.getElementById('pendentesResultsInfo').textContent =
+                'Exibindo ' + filtered.length + ' de ' + pendentesData.length + ' prestadores';
+        }
+
+        // Carregar contagem inicial de pendentes
+        (async function() {
+            try {
+                const response = await fetch(
+                    SUPABASE_CONFIG.url + '/rest/v1/prestadores_pendentes_marcacao_admin?select=id',
+                    {
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.anonKey,
+                            'Authorization': 'Bearer ' + SUPABASE_CONFIG.anonKey
+                        }
+                    }
+                );
+                if (response.ok) {
+                    const data = await response.json();
+                    const countEl = document.getElementById('pendentesCount');
+                    if (countEl) countEl.textContent = data.length;
+                }
+            } catch (e) { console.error(e); }
+        })();
+
         // Event Listeners para Qualificação
+
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('qualificacaoSearch')?.addEventListener('input', aplicarFiltros);
             document.getElementById('qualificacaoArea')?.addEventListener('change', aplicarFiltros);
